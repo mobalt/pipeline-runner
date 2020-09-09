@@ -15,7 +15,7 @@ When running, the configuration folder should have the following structure
 
 ## pipelines.yaml
 The root element should be a dictionary in which the **keys** = pipeline names, 
-the **values** = an array of tasks to run. The possible tasks are:
+the **values** = an array of tasks to run. For a full example look at [example/pipelines.yaml](example/pipelines.yaml). The possible tasks are:
 
 ### load_variables: str
 This will load the flat dictionary of key str. Example:

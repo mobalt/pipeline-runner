@@ -1,146 +1,141 @@
 ---
 structural:
+  - load_variables: structural
   - function: check_required_variables
   - function: split_subject
   - function: choose_node
-  - export:
-      filename: $WORKING_DIR/$SUBJECT.ENVIRONMENT.sh
-      output_var: ENV_SCRIPT
-  - template:
-      path: structural/get_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.XNAT_GET_DATA_job.sh
-      output_var: GET_DATA_SCRIPT
-  - template:
-      path: generic/process_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.PROCESS_DATA_job.sh
-      output_var: PROCESS_DATA_SCRIPT
-  - template:
-      path: generic/clean_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.CLEAN_DATA_job.sh
-      output_var: CLEAN_DATA_SCRIPT
-  - template:
-      path: generic/put_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.XNAT_PUT_DATA_job.sh
-      output_var: PUT_DATA_SCRIPT
-  - template:
-      path: generic/check_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.XNAT_CHECK_DATA_job.sh
-      output_var: CHECK_DATA_SCRIPT
+  - dump_variables: $WORKING_DIR/$SUBJECT.ENVIRONMENT.sh
+  - generate_file:
+      template: structural/get_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.XNAT_GET_DATA_job.sh
+      variable: GET_DATA_SCRIPT
+  - generate_file:
+      template: generic/process_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.PROCESS_DATA_job.sh
+      variable: PROCESS_DATA_SCRIPT
+  - generate_file:
+      template: generic/clean_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.CLEAN_DATA_job.sh
+      variable: CLEAN_DATA_SCRIPT
+  - generate_file:
+      template: generic/put_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.XNAT_PUT_DATA_job.sh
+      variable: PUT_DATA_SCRIPT
+  - generate_file:
+      template: generic/check_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.XNAT_CHECK_DATA_job.sh
+      variable: CHECK_DATA_SCRIPT
   - function: chain_jobs_on_pbs
 
 functional:
+  - load_variables: functional
   - function: check_required_variables
   - function: split_subject
   - function: choose_node
-  - export:
-      filename: $WORKING_DIR/$SUBJECT.ENVIRONMENT.sh
-      output_var: ENV_SCRIPT
-  - template:
+  - dump_variables: $WORKING_DIR/$SUBJECT.ENVIRONMENT.sh
+  - generate_file:
       input: functional/get_data.jinja2
       output: $WORKING_DIR/$SUBJECT.XNAT_GET_DATA_job.sh
-      output_var: GET_DATA_SCRIPT
-  - template:
-      path: generic/process_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.PROCESS_DATA_job.sh
-      output_var: PROCESS_DATA_SCRIPT
-  - template:
-      path: functional/clean_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.CLEAN_DATA_job.sh
-      output_var: CLEAN_DATA_SCRIPT
-  - template:
-      path: generic/put_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.XNAT_PUT_DATA_job.sh
-      output_var: PUT_DATA_SCRIPT
-  - template:
-      path: generic/check_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.XNAT_CHECK_DATA_job.sh
-      output_var: CHECK_DATA_SCRIPT
+      variable: GET_DATA_SCRIPT
+  - generate_file:
+      template: generic/process_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.PROCESS_DATA_job.sh
+      variable: PROCESS_DATA_SCRIPT
+  - generate_file:
+      template: functional/clean_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.CLEAN_DATA_job.sh
+      variable: CLEAN_DATA_SCRIPT
+  - generate_file:
+      template: generic/put_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.XNAT_PUT_DATA_job.sh
+      variable: PUT_DATA_SCRIPT
+  - generate_file:
+      template: generic/check_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.XNAT_CHECK_DATA_job.sh
+      variable: CHECK_DATA_SCRIPT
   - function: chain_jobs_on_pbs
 
 msmall:
+  - load_variables: msmall
   - function: check_required_variables
   - function: split_subject
   - function: choose_node
-  - export:
-      filename: $WORKING_DIR/$SUBJECT.ENVIRONMENT.sh
-      output_var: ENV_SCRIPT
-  - template:
+  - dump_variables: $WORKING_DIR/$SUBJECT.ENVIRONMENT.sh
+  - generate_file:
       input: msmall/get_data.jinja2
       output: $WORKING_DIR/$SUBJECT.XNAT_GET_DATA_job.sh
-      output_var: GET_DATA_SCRIPT
-  - template:
-      path: msmall/process_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.PROCESS_DATA_job.sh
-      output_var: PROCESS_DATA_SCRIPT
-  - template:
-      path: msmall/clean_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.CLEAN_DATA_job.sh
-      output_var: CLEAN_DATA_SCRIPT
-  - template:
-      path: generic/put_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.XNAT_PUT_DATA_job.sh
-      output_var: PUT_DATA_SCRIPT
-  - template:
-      path: generic/check_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.XNAT_CHECK_DATA_job.sh
-      output_var: CHECK_DATA_SCRIPT
+      variable: GET_DATA_SCRIPT
+  - generate_file:
+      template: msmall/process_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.PROCESS_DATA_job.sh
+      variable: PROCESS_DATA_SCRIPT
+  - generate_file:
+      template: msmall/clean_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.CLEAN_DATA_job.sh
+      variable: CLEAN_DATA_SCRIPT
+  - generate_file:
+      template: generic/put_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.XNAT_PUT_DATA_job.sh
+      variable: PUT_DATA_SCRIPT
+  - generate_file:
+      template: generic/check_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.XNAT_CHECK_DATA_job.sh
+      variable: CHECK_DATA_SCRIPT
   - function: chain_jobs_on_pbs
 
 multirunicafix:
+  - load_variables: multirunicafix
   - function: check_required_variables
   - function: split_subject
   - function: choose_node
-  - export:
-      filename: $WORKING_DIR/$SUBJECT.ENVIRONMENT.sh
-      output_var: ENV_SCRIPT
-  - template:
-      path: generic/get_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.XNAT_GET_DATA_job.sh
-      output_var: GET_DATA_SCRIPT
-  - template:
-      path: multirunicafix/process_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.PROCESS_DATA_job.sh
-      output_var: PROCESS_DATA_SCRIPT
-  - template:
-      path: multirunicafix/clean_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.CLEAN_DATA_job.sh
-      output_var: CLEAN_DATA_SCRIPT
-  - template:
-      path: generic/put_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.XNAT_PUT_DATA_job.sh
-      output_var: PUT_DATA_SCRIPT
-  - template:
-      path: generic/check_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.XNAT_CHECK_DATA_job.sh
-      output_var: CHECK_DATA_SCRIPT
+  - dump_variables: $WORKING_DIR/$SUBJECT.ENVIRONMENT.sh
+  - generate_file:
+      template: generic/get_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.XNAT_GET_DATA_job.sh
+      variable: GET_DATA_SCRIPT
+  - generate_file:
+      template: multirunicafix/process_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.PROCESS_DATA_job.sh
+      variable: PROCESS_DATA_SCRIPT
+  - generate_file:
+      template: multirunicafix/clean_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.CLEAN_DATA_job.sh
+      variable: CLEAN_DATA_SCRIPT
+  - generate_file:
+      template: generic/put_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.XNAT_PUT_DATA_job.sh
+      variable: PUT_DATA_SCRIPT
+  - generate_file:
+      template: generic/check_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.XNAT_CHECK_DATA_job.sh
+      variable: CHECK_DATA_SCRIPT
   - function: chain_jobs_on_pbs
 
 diffusion:
+  - load_variables: diffusion
   - function: check_required_variables
   - function: split_subject
   - function: choose_node
-  - export:
-      filename: $WORKING_DIR/$SUBJECT.ENVIRONMENT.sh
-      output_var: ENV_SCRIPT
-  - template:
-      path: diffusion/get_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.XNAT_GET_DATA_job.sh
-      output_var: GET_DATA_SCRIPT
-  - template:
-      path: generic/process_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.PROCESS_DATA_job.sh
-      output_var: PROCESS_DATA_SCRIPT
-  - template:
-      path: diffusion/clean_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.CLEAN_DATA_job.sh
-      output_var: CLEAN_DATA_SCRIPT
-  - template:
-      path: generic/put_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.XNAT_PUT_DATA_job.sh
-      output_var: PUT_DATA_SCRIPT
-  - template:
-      path: generic/check_data.jinja2
-      filename: $WORKING_DIR/$SUBJECT.XNAT_CHECK_DATA_job.sh
-      output_var: CHECK_DATA_SCRIPT
+  - dump_variables: $WORKING_DIR/$SUBJECT.ENVIRONMENT.sh
+  - generate_file:
+      template: diffusion/get_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.XNAT_GET_DATA_job.sh
+      variable: GET_DATA_SCRIPT
+  - generate_file:
+      template: generic/process_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.PROCESS_DATA_job.sh
+      variable: PROCESS_DATA_SCRIPT
+  - generate_file:
+      template: diffusion/clean_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.CLEAN_DATA_job.sh
+      variable: CLEAN_DATA_SCRIPT
+  - generate_file:
+      template: generic/put_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.XNAT_PUT_DATA_job.sh
+      variable: PUT_DATA_SCRIPT
+  - generate_file:
+      template: generic/check_data.jinja2
+      filepath: $WORKING_DIR/$SUBJECT.XNAT_CHECK_DATA_job.sh
+      variable: CHECK_DATA_SCRIPT
   - function: chain_jobs_on_pbs
 
