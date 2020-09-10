@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -l nodes={{ PBS_NODES|default(value=1)|int }}:ppn={{ PBS_PPN|default(value=1)|int }}
+#PBS -l nodes={{ PBS_NODES|default(1)|int }}:ppn={{ PBS_PPN|default(1)|int }}
 
 {%- if PBS_HASWELL -%}
 :haswell
@@ -9,7 +9,7 @@
 :gpus={{ PBS_GPU|int }}
 {%- endif -%}
 
-,walltime={{ PBS_WALLTIME|default(value=4)|int }}:00:00,mem={{ PBS_MEM|default(value=4)|int }}gb
+,walltime={{ PBS_WALLTIME|default(4)|int }}:00:00,mem={{ PBS_MEM|default(4)|int }}gb
 {% if PBS_LOG -%}
 #PBS -o {{ PBS_LOG }}
 #PBS -e {{ PBS_LOG }}
