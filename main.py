@@ -180,24 +180,6 @@ class Executor:
         self.variables = updated_variables
 
 
-def task_load_variables(
-    args,
-    variables: dict,
-    functions: Functions,
-    templates: TemplateEnv,
-    var_loader: VariableLoader,
-):
-    if type(args) != str:
-        raise TypeError(
-            "Expecting a string with the set of variables to load. Instead received: ",
-            args,
-        )
-
-    raw_variables = var_loader.load_set(args)
-    expanded_variables = shellexpansion_dict(raw_variables, variables)
-    return {**variables, **expanded_variables}
-
-
 if __name__ == "__main__":
     pass
     # load_pipeline()
