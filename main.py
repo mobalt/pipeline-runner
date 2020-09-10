@@ -2,7 +2,9 @@
 import importlib.util
 import os
 import re
+
 import yaml
+from jinja2 import Environment, FileSystemLoader
 
 
 class FunctionNotDefined(Exception):
@@ -48,6 +50,14 @@ class Functions:
 
         return variables
 
+class TemplateEnv:
+    def __init__(self, templates_folder):
+        self.env = Environment(loader=FileSystemLoader(templates_folder), )
+
+    def render(self, t, variables):
+        t = self.env.get_template(t)
+        return t.render(**variables)
+
 
 def load_yaml(filename):
     if not os.path.exists(filename):
@@ -58,7 +68,6 @@ def load_yaml(filename):
 
 def load_pipeline(configuration_dir, pipeline_name, args):
     pass
-
 
 
 expansion_regex = re.compile(r'\$([a-zA-Z0-9_]+)|\$\{([a-zA-Z0-9_]+)(?:\:([^}]*))?\}')

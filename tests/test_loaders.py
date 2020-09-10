@@ -1,5 +1,6 @@
 import importlib.util
 import pytest
+from jinja2 import TemplateNotFound, Environment, FileSystemLoader
 
 import main
 
@@ -57,3 +58,23 @@ def test_missing_variables():
     f = main.Functions(f"{CONFIG_DIR}/functions.py")
     with pytest.raises(main.VariableNotSet):
         f.execute(function_name, variables)
+
+def test_load_template():
+    template_name = 'pbs_head.jinja2'
+    template_env = main.TemplateEnv(f"{CONFIG_DIR}/templates")
+    variables = {'PBS_NODES': '99'}
+    results = template_env.render(template_name, variables)
+    expected = '#PBS -S /bin/bash\n#PBS -l nodes=99:ppn=1,walltime=4:00:00,mem=4gb\n'
+    assert results == expected
+
+
+def test_load_template_doesnt_exist():
+    template_name = 'nonexistent.jinja2'
+    template_env = main.TemplateEnv(f"{CONFIG_DIR}/templates")
+    with pytest.raises(TemplateNotFound):
+        template_env.render(template_name, {})
+
+def test_load_template_config_doesnt_exist():
+    template_env = main.TemplateEnv(f"{CONFIG_DIR}/nonexistent")
+    with pytest.raises(TemplateNotFound):
+        template_env.render('_unimportant_.j2', {})
