@@ -9,7 +9,10 @@ from jinja2 import Environment, FileSystemLoader
 
 class VariableSetNotDefined(Exception):
     def __init__(self, filename, variable_set_name):
-        super().__init__(f'The variable set "{variable_set_name}" is not defined in "{filename}".')
+        super().__init__(
+            f'The variable set "{variable_set_name}" is not defined in "{filename}".'
+        )
+
 
 class PipelineNotDefined(Exception):
     def __init__(self, filename, pipeline):
@@ -18,12 +21,17 @@ class PipelineNotDefined(Exception):
 
 class FunctionNotDefined(Exception):
     def __init__(self, filename, function_name):
-        super().__init__(f'The function "{function_name}" is not defined in "{filename}".')
+        super().__init__(
+            f'The function "{function_name}" is not defined in "{filename}".'
+        )
 
 
 class VariableNotSet(Exception):
     def __init__(self, variables):
-        super().__init__(f'The following variable(s) have not been set: {", ".join(variables)}.')
+        super().__init__(
+            f'The following variable(s) have not been set: {", ".join(variables)}.'
+        )
+
 
 class Pipelines:
     def __init__(self, filename):
@@ -35,6 +43,7 @@ class Pipelines:
             raise PipelineNotDefined(self.filename, self.pipelines)
 
         return self.pipelines[pipeline]
+
 
 class VariableLoader:
     def __init__(self, filename):
@@ -63,7 +72,7 @@ class Functions:
         fn = getattr(self.module, function_name)
         parameters = fn.__code__.co_varnames
         defaults = fn.__defaults__
-        args = dict(zip(parameters[-len(defaults):], defaults))
+        args = dict(zip(parameters[-len(defaults) :], defaults))
         args.update(variables)
 
         # Make sure none of the arguments are missing, else throw error
@@ -81,9 +90,12 @@ class Functions:
 
         return variables
 
+
 class TemplateEnv:
     def __init__(self, templates_folder):
-        self.env = Environment(loader=FileSystemLoader(templates_folder), )
+        self.env = Environment(
+            loader=FileSystemLoader(templates_folder),
+        )
 
     def render(self, t, variables):
         t = self.env.get_template(t)
@@ -102,17 +114,20 @@ def load_pipeline(configuration_dir, pipeline_name, args):
     return
 
 
-expansion_regex = re.compile(r'\$([a-zA-Z0-9_]+)|\$\{([a-zA-Z0-9_]+)(?:\:([^}]*))?\}')
+expansion_regex = re.compile(r"\$([a-zA-Z0-9_]+)|\$\{([a-zA-Z0-9_]+)(?:\:([^}]*))?\}")
 
 
 def shellexpansion(string, variables=None):
     if variables == None:
         variables = {}
-    if string[0] == '~':
+    if string[0] == "~":
         home = os.path.expanduser("~")
         string = home + string[1:]
+
     def replacements(matchobj):
-        variable_name = matchobj.group(1) if matchobj.group(2) is None else matchobj.group(2)
+        variable_name = (
+            matchobj.group(1) if matchobj.group(2) is None else matchobj.group(2)
+        )
         default_value = matchobj.group(3)
         if variable_name in variables:
             return variables[variable_name]
@@ -120,15 +135,23 @@ def shellexpansion(string, variables=None):
             return default_value
         else:
             raise VariableNotSet((variable_name,))
+
     string = expansion_regex.sub(replacements, string)
     return string
+
 
 def shellexpansion_dict(obj, variables=None):
     return {k: shellexpansion(v, variables) for k, v in obj.items()}
 
 
 class Executor:
-    def __init__(self, variables:dict, functions:Functions, templates:TemplateEnv, var_loader:VariableLoader):
+    def __init__(
+        self,
+        variables: dict,
+        functions: Functions,
+        templates: TemplateEnv,
+        var_loader: VariableLoader,
+    ):
         self.variables = variables
         self.functions = functions
         self.templates = templates
@@ -138,37 +161,43 @@ class Executor:
     def from_config_dir(configuration_dir):
         executor = Executor(
             dict(os.environ),
-            Functions(f'{configuration_dir}/functions.py'),
-            TemplateEnv(f'{configuration_dir}/templates'),
-            VariableLoader(f'{configuration_dir}/variables.yaml'),
+            Functions(f"{configuration_dir}/functions.py"),
+            TemplateEnv(f"{configuration_dir}/templates"),
+            VariableLoader(f"{configuration_dir}/variables.yaml"),
         )
         return executor
 
     def load_variables(self, set_name):
         if type(set_name) != str:
-            raise TypeError("Expecting a string with the set of variables to load. Instead received: ", set_name)
+            raise TypeError(
+                "Expecting a string with the set of variables to load. Instead received: ",
+                set_name,
+            )
 
         raw_variables = self.var_loader.load_set(set_name)
         expanded_variables = shellexpansion_dict(raw_variables, self.variables)
-        updated_variables = {
-            **self.variables,
-            **expanded_variables
-        }
+        updated_variables = {**self.variables, **expanded_variables}
         self.variables = updated_variables
 
 
-def task_load_variables(args, variables:dict, functions:Functions, templates:TemplateEnv, var_loader:VariableLoader):
+def task_load_variables(
+    args,
+    variables: dict,
+    functions: Functions,
+    templates: TemplateEnv,
+    var_loader: VariableLoader,
+):
     if type(args) != str:
-        raise TypeError("Expecting a string with the set of variables to load. Instead received: ", args)
+        raise TypeError(
+            "Expecting a string with the set of variables to load. Instead received: ",
+            args,
+        )
 
     raw_variables = var_loader.load_set(args)
     expanded_variables = shellexpansion_dict(raw_variables, variables)
-    return {
-        **variables,
-        **expanded_variables
-    }
+    return {**variables, **expanded_variables}
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass
     # load_pipeline()
