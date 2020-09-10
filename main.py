@@ -91,6 +91,8 @@ def shellexpansion(string, variables=None):
     string = expansion_regex.sub(replacements, string)
     return string
 
+def shellexpansion_dict(obj, variables=None):
+    return {k: shellexpansion(v, variables) for k, v in obj.items()}
 
 if __name__ == '__main__':
     pass

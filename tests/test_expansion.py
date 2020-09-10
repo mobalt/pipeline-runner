@@ -35,3 +35,17 @@ def test_full_expansion():
 def test_missing_variable_throws_exception():
     with pytest.raises(main.VariableNotSet):
         main.shellexpansion("$NotSet")
+
+def test_shellexpansion_dict():
+    test_input = {
+        "static": "This should not change.",
+        "dynamic": "${A}_$B"
+    }
+    variables = {"A":"AA", "B": "BBB"}
+    result = main.shellexpansion_dict(test_input, variables)
+    expected = {
+        "static": "This should not change.",
+        "dynamic": "AA_BBB"
+    }
+    assert result == expected
+
