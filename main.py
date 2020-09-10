@@ -1,15 +1,19 @@
 #!/bin/python3
-import os
-import yaml
 import importlib.util
+import os
+import re
+import yaml
+
 
 class FunctionNotDefined(Exception):
     def __init__(self, filename, function_name):
         super().__init__(f'The function "{function_name}" is not defined in "{filename}".')
 
+
 class VariableNotSet(Exception):
     def __init__(self, variables):
         super().__init__(f'The following variable(s) have not been set: {", ".join(variables)}.')
+
 
 class Functions:
     def __init__(self, filename):
@@ -54,6 +58,29 @@ def load_yaml(filename):
 
 def load_pipeline(configuration_dir, pipeline_name, args):
     pass
+
+
+
+expansion_regex = re.compile(r'\$([a-zA-Z0-9_]+)|\$\{([a-zA-Z0-9_]+)(?:\:([^}]*))?\}')
+
+
+def shellexpansion(string, variables=None):
+    if variables == None:
+        variables = {}
+    if string[0] == '~':
+        home = os.path.expanduser("~")
+        string = home + string[1:]
+    def replacements(matchobj):
+        variable_name = matchobj.group(1) if matchobj.group(2) is None else matchobj.group(2)
+        default_value = matchobj.group(3)
+        if variable_name in variables:
+            return variables[variable_name]
+        elif default_value:
+            return default_value
+        else:
+            raise VariableNotSet((variable_name,))
+    string = expansion_regex.sub(replacements, string)
+    return string
 
 
 if __name__ == '__main__':
