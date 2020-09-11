@@ -6,8 +6,22 @@ def check_required_variables():
     pass
 
 
-def split_subject():
-    pass
+def split_subject(SUBJECT):
+    components = SUBJECT.split(":")
+    if len(components) != 4:
+        raise ValueError(
+            "Expecting a colon-delimited SUBJECT in the format AA:BB:CC:DD, instead got: ",
+            SUBJECT,
+        )
+
+    proj, subject_id, classifier, extra = components
+    return {
+        "PROJECT": proj,
+        "SUBJECT_ID": subject_id,
+        "SUBJECT_CLASSIFIER": classifier,
+        "SUBJECT_EXTRA": extra,
+        "SESSION": f"{subject_id}_{classifier}",
+    }
 
 
 def choose_node():
