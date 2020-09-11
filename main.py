@@ -27,9 +27,11 @@ class FunctionNotDefined(Exception):
 
 
 class VariableNotSet(Exception):
-    def __init__(self, variables):
+    def __init__(self, not_set, variables):
         super().__init__(
-            f'The following variable(s) have not been set: {", ".join(variables)}.'
+            f'The following variable(s) have not been set: {", ".join(not_set)}',
+            f"Here is dump of the variables that exist as of this point.",
+            variables
         )
 
 
@@ -52,7 +54,7 @@ class VariableLoader:
 
     def load_set(self, variable_set_name):
         if variable_set_name not in self.variable_sets:
-            raise VariableSetNotDefined(self.filename, self.variable_sets)
+            raise VariableSetNotDefined(self.filename, variable_set_name)
 
         return self.variable_sets[variable_set_name]
 
@@ -78,7 +80,7 @@ class Functions:
         # Make sure none of the arguments are missing, else throw error
         missing = [v for v in parameters if v not in args]
         if len(missing) != 0:
-            raise VariableNotSet(missing)
+            raise VariableNotSet(missing, variables)
 
         # execute function
         args = [args[v] for v in parameters]
@@ -132,7 +134,7 @@ def shellexpansion(string, variables):
         elif default_value:
             return default_value
         else:
-            raise VariableNotSet((variable_name,))
+            raise VariableNotSet((variable_name,), variables)
 
     string = expansion_regex.sub(replacements, string)
     return string
