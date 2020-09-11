@@ -107,3 +107,25 @@ def test_saving_generated_file(exec):
     # clean up generated file
     os.remove(filepath)
     assert not os.path.exists(filepath)
+
+
+def test_call_function(exec):
+    exec.variables["SUBJECT"] = "proj:x:y:z"
+    expected = {
+        "PROJECT": "proj",
+        "SUBJECT_ID": "x",
+        "SUBJECT_CLASSIFIER": "y",
+        "SUBJECT_EXTRA": "z",
+        "SESSION": "x_y",
+    }
+    actual = exec.function("split_subject")
+    all_vars = exec.variables
+    assert expected == actual
+    # check that expected items are a subset of all_vars
+    assert expected.items() <= all_vars.items()
+
+
+def test_calling_function_throws_error(exec):
+    exec.variables["SUBJECT"] = "missing_stuff:x"
+    with pytest.raises(ValueError):
+        actual = exec.function("split_subject")

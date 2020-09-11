@@ -72,8 +72,8 @@ class Functions:
         if not hasattr(self.module, function_name):
             raise FunctionNotDefined(self.filename, function_name)
         fn = getattr(self.module, function_name)
-        parameters = fn.__code__.co_varnames
-        defaults = fn.__defaults__
+        parameters = fn.__code__.co_varnames[: fn.__code__.co_argcount]
+        defaults = fn.__defaults__ if fn.__defaults__ is not None else []
         args = dict(zip(parameters[-len(defaults) :], defaults))
         args.update(variables)
 
@@ -203,6 +203,17 @@ class Executor:
         self.variables = updated_variables
 
         return rendered_text
+
+    def function(self, function_name):
+        if type(function_name) != str:
+            raise TypeError(
+                "Expecting a string with the set of variables to load. Instead received: ",
+                function_name,
+            )
+        result = self.functions.execute(function_name, self.variables)
+        self.variables.update(result)
+
+        return result
 
 
 if __name__ == "__main__":
