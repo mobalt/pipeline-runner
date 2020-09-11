@@ -13,7 +13,9 @@ def test_load_pipeline():
 
 @pytest.fixture
 def exec():
-    return main.Executor.from_config_dir(CONFIG_DIR)
+    executor = main.Executor.from_config_dir(CONFIG_DIR)
+    executor.variables["FOO"] = "bar"
+    return executor
 
 
 def test_executor_load_variables(exec):
@@ -57,7 +59,6 @@ def test_generate_file_filepath_default_variable_set(exec):
 
 
 def test_shellexpanded_generated_filepath(exec):
-    exec.variables["FOO"] = "bar"
     exec.generate_file(
         {
             "template": "pbs_head.jinja2",
