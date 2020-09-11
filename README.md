@@ -17,6 +17,15 @@ When running, the configuration folder should have the following structure
 The root element should be a dictionary in which the **keys** = pipeline names, 
 the **values** = an array of tasks to run. For a full example look at [example/pipelines.yaml](example/pipelines.yaml). The possible tasks are:
 
+### set_variables: dict
+Directly define or override specific variables.
+Example:
+
+```yaml
+- set_variables:
+    HOME: /scratch/$USER/home/
+    NEW_VARIABLE: Superman
+```
 ### load_variables: str
 This will load the flat dictionary of key str. Example:
 ```yaml

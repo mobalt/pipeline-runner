@@ -129,3 +129,10 @@ def test_calling_function_throws_error(exec):
     exec.variables["SUBJECT"] = "missing_stuff:x"
     with pytest.raises(ValueError):
         actual = exec.function("split_subject")
+
+
+def test_set_variables(exec):
+    before = dict(exec.variables)
+    exec.set_variables({"USER": "New User Account"})
+    after = dict(exec.variables)
+    assert before["USER"] != after["USER"]

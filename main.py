@@ -215,6 +215,16 @@ class Executor:
 
         return result
 
+    def set_variables(self, new_variables):
+        if type(new_variables) != dict:
+            raise TypeError(
+                "Expecting to receive a flat dict of new variables. Instead received:",
+                new_variables,
+            )
+        expanded = shellexpansion_dict(new_variables, self.variables)
+        self.variables.update(expanded)
+        return expanded
+
 
 if __name__ == "__main__":
     pass
