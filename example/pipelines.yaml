@@ -1,30 +1,41 @@
 ---
 structural:
-  - load_variables: structural
+  - set_variables:
+      USER: HCPpipeline
+      HOME: /home/HCPpipeline
+      SUBJECT: "XX:YYY:ZZZ:A"
+  - load_variables: structural_preprocess_CCF_HCA
   - function: check_required_variables
   - function: split_subject
   - function: choose_node
-  - dump_variables: $WORKING_DIR/$SUBJECT.ENVIRONMENT.sh
+  - set_variables:
+      WORKING_DIR: ./temp
+  - function: make_directories
+#  - dump_variables: $WORKING_DIR/$SUBJECT.ENVIRONMENT.sh
   - generate_file:
-      template: structural/get_data.jinja2
-      filepath: $WORKING_DIR/$SUBJECT.XNAT_GET_DATA_job.sh
-      variable: GET_DATA_SCRIPT
-  - generate_file:
-      template: generic/process_data.jinja2
-      filepath: $WORKING_DIR/$SUBJECT.PROCESS_DATA_job.sh
-      variable: PROCESS_DATA_SCRIPT
-  - generate_file:
-      template: generic/clean_data.jinja2
-      filepath: $WORKING_DIR/$SUBJECT.CLEAN_DATA_job.sh
-      variable: CLEAN_DATA_SCRIPT
-  - generate_file:
-      template: generic/put_data.jinja2
-      filepath: $WORKING_DIR/$SUBJECT.XNAT_PUT_DATA_job.sh
-      variable: PUT_DATA_SCRIPT
-  - generate_file:
-      template: generic/check_data.jinja2
-      filepath: $WORKING_DIR/$SUBJECT.XNAT_CHECK_DATA_job.sh
-      variable: CHECK_DATA_SCRIPT
+      template: pbs_head.jinja2
+      filepath: $WORKING_DIR/$SUBJECT_ID.PBS_HEAD.sh
+      variable: PBS_HEAD_SCRIPT
+#  - generate_file:
+#      template: structural/get_data.jinja2
+#      filepath: $WORKING_DIR/$SUBJECT.XNAT_GET_DATA_job.sh
+#      variable: GET_DATA_SCRIPT
+#  - generate_file:
+#      template: generic/process_data.jinja2
+#      filepath: $WORKING_DIR/$SUBJECT.PROCESS_DATA_job.sh
+#      variable: PROCESS_DATA_SCRIPT
+#  - generate_file:
+#      template: generic/clean_data.jinja2
+#      filepath: $WORKING_DIR/$SUBJECT.CLEAN_DATA_job.sh
+#      variable: CLEAN_DATA_SCRIPT
+#  - generate_file:
+#      template: generic/put_data.jinja2
+#      filepath: $WORKING_DIR/$SUBJECT.XNAT_PUT_DATA_job.sh
+#      variable: PUT_DATA_SCRIPT
+#  - generate_file:
+#      template: generic/check_data.jinja2
+#      filepath: $WORKING_DIR/$SUBJECT.XNAT_CHECK_DATA_job.sh
+#      variable: CHECK_DATA_SCRIPT
   - function: chain_jobs_on_pbs
 
 functional:

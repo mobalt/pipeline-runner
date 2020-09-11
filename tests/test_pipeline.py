@@ -136,3 +136,14 @@ def test_set_variables(exec):
     exec.set_variables({"USER": "New User Account"})
     after = dict(exec.variables)
     assert before["USER"] != after["USER"]
+
+
+@pytest.fixture
+def exec_with_pipeline(exec):
+    exec.variables['PIPELINE_NAME'] = 'structural'
+    return exec
+
+
+def test_execute_pipeline(exec_with_pipeline):
+    exec = exec_with_pipeline
+    main.execute_pipeline(exec)
