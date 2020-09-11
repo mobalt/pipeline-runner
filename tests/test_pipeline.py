@@ -26,3 +26,15 @@ def test_executor_load_variables_has_expansion(exec):
     raw = "$HOME/XNAT_BUILD_DIR/$USER"
     actual = exec.variables["XNAT_PBS_JOBS_BUILD_DIR"]
     assert raw != actual
+
+
+def test_executor_load_variables_bad_argument(exec):
+    with pytest.raises(TypeError):
+        exec.load_variables(None)
+
+
+def test_executor_load_variables_nonexistent_set_throws_error(exec):
+    with pytest.raises(main.VariableSetNotDefined):
+        exec.load_variables("not exist")
+
+
