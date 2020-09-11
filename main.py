@@ -117,9 +117,7 @@ def load_pipeline(configuration_dir, pipeline_name, args):
 expansion_regex = re.compile(r"\$([a-zA-Z0-9_]+)|\$\{([a-zA-Z0-9_]+)(?:\:([^}]*))?\}")
 
 
-def shellexpansion(string, variables=None):
-    if variables == None:
-        variables = {}
+def shellexpansion(string, variables):
     if string[0] == "~":
         home = os.path.expanduser("~")
         string = home + string[1:]
@@ -140,7 +138,7 @@ def shellexpansion(string, variables=None):
     return string
 
 
-def shellexpansion_dict(obj, variables=None):
+def shellexpansion_dict(obj, variables):
     return {k: shellexpansion(v, variables) for k, v in obj.items()}
 
 

@@ -4,7 +4,7 @@ import pytest
 
 
 def test_tilde_expansion():
-    result = main.shellexpansion("~/a/b/c")
+    result = main.shellexpansion("~/a/b/c", {})
     expected = expanduser("~") + "/a/b/c"
     assert result == expected
 
@@ -40,7 +40,7 @@ def test_full_expansion():
 
 def test_missing_variable_throws_exception():
     with pytest.raises(main.VariableNotSet):
-        main.shellexpansion("$NotSet")
+        main.shellexpansion("$NotSet", {})
 
 
 def test_shellexpansion_dict():
