@@ -180,6 +180,30 @@ class Executor:
         updated_variables = {**self.variables, **expanded_variables}
         self.variables = updated_variables
 
+    def generate_file(self, params, dryrun=False):
+        if type(params) != dict:
+            raise TypeError("Expecting to receive a dict as specified at https://github.com/mobalt/pipeline-runner#generate_file-dict Instead received:", params)
+
+        params = shellexpansion_dict(params, self.variables)
+
+        rendered_text = self.templates.render(params['template'], self.variables)
+
+        filepath = params['filepath']
+        filepath = os.path.abspath(filepath)
+
+        if not dryrun:
+            with open(filepath, 'w') as fd:
+                fd.write(rendered_text)
+
+        updated_variables = {
+            **self.variables,
+            params.get('variable', 'OUTPUT_FILE'): filepath
+        }
+        self.variables = updated_variables
+
+
+        return rendered_text
+
 
 if __name__ == "__main__":
     pass

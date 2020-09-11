@@ -40,7 +40,7 @@ with the following key-value pairs:
   <dd>The full path onto which the new file should be saved to. </dd>
   <dt>variable</dt>
   <dd>The dynamic value of filepath is converted to a static absolute path and 
-  saved to the specifed variable.</dd>
+  saved to the specifed variable. The default value = "<b>OUTPUT_FILE</b>".</dd>
 </dl>
 
 Example:
