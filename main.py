@@ -86,11 +86,10 @@ class Functions:
         args = [args[v] for v in parameters]
         result = fn(*args)
 
-        # if dict returned, update variables
-        if result and type(result) == dict:
-            variables.update(result)
-
-        return variables
+        if not result or type(result) != dict:
+            return {}
+        else:
+            return result
 
 
 class TemplateEnv:

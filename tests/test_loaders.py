@@ -24,7 +24,7 @@ def test_with_default_value_not_added_to_result():
     variables = {"REQUIRED": True}
     f = main.Functions(f"{CONFIG_DIR}/functions.py")
     actual = f.execute(function_name, variables)
-    expected = {"REQUIRED": True, "SET_THIS_VARIABLE": "1", "DEFAULTED": "default"}
+    expected = {"SET_THIS_VARIABLE": "1", "DEFAULTED": "default"}
     assert actual == expected
 
 
@@ -34,9 +34,7 @@ def test_function_with_required_and_defaulted_value():
     f = main.Functions(f"{CONFIG_DIR}/functions.py")
     actual = f.execute(function_name, variables)
     expected = {
-        "REQUIRED": True,
         "SET_THIS_VARIABLE": "1",
-        "WITH_DEFAULT_VALUE": "new value",
         "DEFAULTED": "new value",
     }
     assert actual == expected
