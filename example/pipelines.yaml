@@ -10,12 +10,12 @@ structural:
   - function: choose_node
   - set_variables:
       WORKING_DIR: ./temp
-  - function: make_directories
+#  - function: make_directories
 #  - dump_variables: $WORKING_DIR/$SUBJECT.ENVIRONMENT.sh
-  - generate_file:
-      template: pbs_head.jinja2
-      filepath: $WORKING_DIR/$SUBJECT_ID.PBS_HEAD.sh
-      variable: PBS_HEAD_SCRIPT
+#  - generate_file:
+#      template: pbs_head.jinja2
+#      filepath: $WORKING_DIR/$SUBJECT_ID.PBS_HEAD.sh
+#      variable: PBS_HEAD_SCRIPT
 #  - generate_file:
 #      template: structural/get_data.jinja2
 #      filepath: $WORKING_DIR/$SUBJECT.XNAT_GET_DATA_job.sh
