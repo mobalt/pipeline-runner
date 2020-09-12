@@ -1,4 +1,4 @@
-from pipeline import main
+from prunner import main
 import pytest
 
 

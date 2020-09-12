@@ -2,7 +2,7 @@ import importlib.util
 import pytest
 from jinja2 import TemplateNotFound, Environment, FileSystemLoader
 
-from pipeline import main
+from prunner import main
 
 CONFIG_DIR = "example"
 

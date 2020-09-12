@@ -1,4 +1,4 @@
-from pipeline import main
+from prunner import main
 from os.path import expanduser
 import pytest
 
