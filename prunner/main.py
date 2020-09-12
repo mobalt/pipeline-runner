@@ -94,7 +94,7 @@ class FunctionLoader:
             return result
 
 
-class TemplateEnv:
+class TemplateLoader:
     def __init__(self, templates_folder):
         self.env = Environment(
             loader=FileSystemLoader(templates_folder), undefined=StrictUndefined
@@ -145,7 +145,7 @@ class Executor:
         self,
         variables: dict,
         functions: FunctionLoader,
-        templates: TemplateEnv,
+        templates: TemplateLoader,
         var_loader: VariableLoader,
     ):
         self.variables = variables
@@ -161,7 +161,7 @@ class Executor:
         executor = Executor(
             dict(os.environ),
             FunctionLoader(f"{configuration_dir}/functions.py"),
-            TemplateEnv(f"{configuration_dir}/templates"),
+            TemplateLoader(f"{configuration_dir}/templates"),
             VariableLoader(f"{configuration_dir}/variables.yaml"),
         )
         executor.config_dir = configuration_dir
