@@ -11,6 +11,12 @@ def test_load_pipeline():
     assert pipelines.tasks("structural") != []
 
 
+def test_load_pipe_that_doesnt_exist():
+    pipelines = main.Pipelines(f"{CONFIG_DIR}/pipelines.yaml")
+    with pytest.raises(main.PipelineNotDefined):
+        pipelines.tasks("does not exist")
+
+
 @pytest.fixture
 def exec():
     executor = main.Executor.from_config_dir(CONFIG_DIR)
@@ -56,6 +62,14 @@ def test_generate_file_filepath_default_variable_set(exec):
 
     assert "OUT" not in before
     assert "OUT" in after
+
+
+def test_generate_file_receives_str_param(exec):
+    with pytest.raises(TypeError):
+        exec.generate_file(
+            "template = nope.jinja",
+            dryrun=True,
+        )
 
 
 def test_shellexpanded_generated_filepath(exec):
@@ -125,6 +139,11 @@ def test_call_function(exec):
     assert expected.items() <= all_vars.items()
 
 
+def test_function_receives_non_str_param(exec):
+    with pytest.raises(TypeError):
+        exec.function({})
+
+
 def test_calling_function_throws_error(exec):
     exec.variables["SUBJECT"] = "missing_stuff:x"
     with pytest.raises(ValueError):
@@ -136,6 +155,14 @@ def test_set_variables(exec):
     exec.set_variables({"USER": "New User Account"})
     after = dict(exec.variables)
     assert before["USER"] != after["USER"]
+
+
+def test_set_variables_receives_param_of_wrong_type(exec):
+    with pytest.raises(TypeError):
+        exec.set_variables([])
+
+    with pytest.raises(TypeError):
+        exec.set_variables(" Noop ")
 
 
 @pytest.fixture
