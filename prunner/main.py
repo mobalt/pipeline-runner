@@ -61,7 +61,7 @@ class VariableLoader:
         return self.variable_sets[variable_set_name]
 
 
-class Functions:
+class FunctionLoader:
     def __init__(self, filename):
         spec = importlib.util.spec_from_file_location("main", filename)
         module = importlib.util.module_from_spec(spec)
@@ -144,7 +144,7 @@ class Executor:
     def __init__(
         self,
         variables: dict,
-        functions: Functions,
+        functions: FunctionLoader,
         templates: TemplateEnv,
         var_loader: VariableLoader,
     ):
@@ -160,7 +160,7 @@ class Executor:
     def from_config_dir(configuration_dir):
         executor = Executor(
             dict(os.environ),
-            Functions(f"{configuration_dir}/functions.py"),
+            FunctionLoader(f"{configuration_dir}/functions.py"),
             TemplateEnv(f"{configuration_dir}/templates"),
             VariableLoader(f"{configuration_dir}/variables.yaml"),
         )
