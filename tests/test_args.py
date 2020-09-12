@@ -1,4 +1,4 @@
-import main
+from pipeline import main
 import pytest
 
 

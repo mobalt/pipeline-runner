@@ -1,6 +1,6 @@
 import os
 
-import main
+from pipeline import main
 import pytest
 
 CONFIG_DIR = "example"

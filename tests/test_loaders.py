@@ -2,7 +2,7 @@ import importlib.util
 import pytest
 from jinja2 import TemplateNotFound, Environment, FileSystemLoader
 
-import main
+from pipeline import main
 
 CONFIG_DIR = "example"
 
