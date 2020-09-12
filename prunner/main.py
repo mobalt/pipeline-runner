@@ -112,7 +112,6 @@ def load_yaml(filename):
         return yaml.load(fd, Loader=yaml.SafeLoader)
 
 
-
 expansion_regex = re.compile(r"\$([a-zA-Z0-9_]+)|\$\{([a-zA-Z0-9_]+)(?:\:([^}]*))?\}")
 
 
@@ -239,14 +238,12 @@ def list_of_methods(class_):
 
 def execute_pipeline(exec: Executor):
     yaml_file = f"{exec.config_dir}/pipelines.yaml"
-    pipelines = load_yaml(yaml_file)
+    pipelines = Pipelines(yaml_file)
     pipeline_to_execute = exec.variables["PIPELINE_NAME"]
-    if pipeline_to_execute not in pipelines:
-        raise PipelineNotDefined(yaml_file, pipeline_to_execute)
 
     methods_available = list_of_methods(Executor)
 
-    pipeline = pipelines[pipeline_to_execute]
+    pipeline = pipelines.tasks(pipeline_to_execute)
     for i, task in enumerate(pipeline):
         task: dict = copy.deepcopy(task)
         task_name, task_value = task.popitem()
