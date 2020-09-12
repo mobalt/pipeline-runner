@@ -231,15 +231,20 @@ class Executor:
         self.variables.update(expanded)
         return expanded
 
+
 def list_of_methods(class_):
-    method_list = [func for func in dir(class_) if callable(getattr(class_, func)) and not func.startswith("__")]
+    method_list = [
+        func
+        for func in dir(class_)
+        if callable(getattr(class_, func)) and not func.startswith("__")
+    ]
     return method_list
 
 
 def execute_pipeline(exec: Executor):
     yaml_file = f"{exec.config_dir}/pipelines.yaml"
     pipelines = load_yaml(yaml_file)
-    pipeline_to_execute = exec.variables['PIPELINE_NAME']
+    pipeline_to_execute = exec.variables["PIPELINE_NAME"]
     if pipeline_to_execute not in pipelines:
         raise PipelineNotDefined(yaml_file, pipeline_to_execute)
 
@@ -247,16 +252,16 @@ def execute_pipeline(exec: Executor):
 
     pipeline = pipelines[pipeline_to_execute]
     for i, task in enumerate(pipeline):
-        task:dict = copy.deepcopy(task)
+        task: dict = copy.deepcopy(task)
         task_name, task_value = task.popitem()
 
         if task_name not in methods_available:
             raise Exception("That task is not available: ", task_name)
 
         if type(task_value) == str:
-            print(f'Task {i}: {task_name} = {task_value}')
+            print(f"Task {i}: {task_name} = {task_value}")
         else:
-            print(f'Task {i}: {task_name}\n{task_value}')
+            print(f"Task {i}: {task_name}\n{task_value}")
 
         func = getattr(exec, task_name)
         func(task_value)
@@ -319,9 +324,11 @@ def parse_arguments(args=None):
 
     return executor
 
+
 def main():
     exec = parse_arguments()
     execute_pipeline(exec)
+
 
 if __name__ == "__main__":
     main()

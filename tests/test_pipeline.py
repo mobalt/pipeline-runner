@@ -140,7 +140,7 @@ def test_set_variables(exec):
 
 @pytest.fixture
 def exec_with_pipeline(exec):
-    exec.variables['PIPELINE_NAME'] = 'structural'
+    exec.variables["PIPELINE_NAME"] = "structural"
     return exec
 
 

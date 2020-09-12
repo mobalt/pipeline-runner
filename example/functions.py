@@ -1,7 +1,6 @@
 import os
 
 
-
 def example_function(REQUIRED, WITH_DEFAULT_VALUE="default"):
     return {"SET_THIS_VARIABLE": "1", "DEFAULTED": WITH_DEFAULT_VALUE}
 
@@ -31,8 +30,10 @@ def split_subject(SUBJECT):
 def choose_node():
     pass
 
+
 def chain_jobs_on_pbs():
     pass
+
 
 def make_directories(WORKING_DIR):
     os.makedirs(WORKING_DIR, exist_ok=True)
