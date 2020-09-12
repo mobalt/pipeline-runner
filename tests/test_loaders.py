@@ -1,10 +1,21 @@
-import importlib.util
 import pytest
-from jinja2 import TemplateNotFound, Environment, FileSystemLoader
+from jinja2 import TemplateNotFound
 
+from prunner.loader import PipelineLoader, PipelineNotDefined
 from prunner import main
 
 CONFIG_DIR = "example"
+
+
+def test_pipeline_loader_not_empty():
+    pipelines = PipelineLoader(f"{CONFIG_DIR}/pipelines.yaml")
+    assert pipelines.tasks("structural") != []
+
+
+def test_pipeline_loader_load_pipe_that_doesnt_exist():
+    pipelines = PipelineLoader(f"{CONFIG_DIR}/pipelines.yaml")
+    with pytest.raises(PipelineNotDefined):
+        pipelines.tasks("does not exist")
 
 
 def test_with_default_value_not_added_to_result():

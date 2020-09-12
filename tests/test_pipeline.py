@@ -6,17 +6,6 @@ import pytest
 CONFIG_DIR = "example"
 
 
-def test_load_pipeline():
-    pipelines = main.PipelineLoader(f"{CONFIG_DIR}/pipelines.yaml")
-    assert pipelines.tasks("structural") != []
-
-
-def test_load_pipe_that_doesnt_exist():
-    pipelines = main.PipelineLoader(f"{CONFIG_DIR}/pipelines.yaml")
-    with pytest.raises(main.PipelineNotDefined):
-        pipelines.tasks("does not exist")
-
-
 @pytest.fixture
 def exec():
     executor = main.Executor.from_config_dir(CONFIG_DIR)
