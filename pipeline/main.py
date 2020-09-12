@@ -277,7 +277,7 @@ def parse_rest_of_args(args):
     escape_spaces = [x if " " not in x else f'"{x}"' for x in positional]
     arg_zero = " ".join(escape_spaces)
     positional = [arg_zero] + positional
-    positional_dict = {str(i): value for i, value in enumerate(positional)}
+    positional_dict = {f"_{i}": value for i, value in enumerate(positional)}
     return {**positional_dict, **named}
 
 
