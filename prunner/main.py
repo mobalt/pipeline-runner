@@ -40,7 +40,8 @@ class VariableNotSet(Exception):
 class PipelineLoader:
     def __init__(self, filename):
         self.filename = filename
-        self.pipelines = load_yaml(filename)
+        with open(filename) as fd:
+            self.pipelines = yaml.load(fd, Loader=yaml.SafeLoader)
 
     def tasks(self, pipeline):
         if pipeline not in self.pipelines:
@@ -52,7 +53,8 @@ class PipelineLoader:
 class VariableLoader:
     def __init__(self, filename):
         self.filename = filename
-        self.variable_sets = load_yaml(filename)
+        with open(filename) as fd:
+            self.variable_sets = yaml.load(fd, Loader=yaml.SafeLoader)
 
     def load_set(self, variable_set_name):
         if variable_set_name not in self.variable_sets:
@@ -103,13 +105,6 @@ class TemplateLoader:
     def render(self, template_name, variables):
         t = self.env.get_template(template_name)
         return t.render(**variables)
-
-
-def load_yaml(filename):
-    if not os.path.exists(filename):
-        return {}
-    with open(filename) as fd:
-        return yaml.load(fd, Loader=yaml.SafeLoader)
 
 
 expansion_regex = re.compile(r"\$([a-zA-Z0-9_]+)|\$\{([a-zA-Z0-9_]+)(?:\:([^}]*))?\}")
