@@ -44,7 +44,7 @@ class Pipelines:
 
     def tasks(self, pipeline):
         if pipeline not in self.pipelines:
-            raise PipelineNotDefined(self.filename, self.pipelines)
+            raise PipelineNotDefined(self.filename, pipeline)
 
         return self.pipelines[pipeline]
 
