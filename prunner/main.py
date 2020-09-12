@@ -37,7 +37,7 @@ class VariableNotSet(Exception):
         )
 
 
-class Pipelines:
+class PipelineLoader:
     def __init__(self, filename):
         self.filename = filename
         self.pipelines = load_yaml(filename)
@@ -238,7 +238,7 @@ def list_of_methods(class_):
 
 def execute_pipeline(exec: Executor):
     yaml_file = f"{exec.config_dir}/pipelines.yaml"
-    pipelines = Pipelines(yaml_file)
+    pipelines = PipelineLoader(yaml_file)
     pipeline_to_execute = exec.variables["PIPELINE_NAME"]
 
     methods_available = list_of_methods(Executor)
