@@ -112,10 +112,6 @@ def load_yaml(filename):
         return yaml.load(fd, Loader=yaml.SafeLoader)
 
 
-def load_pipeline(configuration_dir, pipeline_name, args):
-    variables = {}
-    return
-
 
 expansion_regex = re.compile(r"\$([a-zA-Z0-9_]+)|\$\{([a-zA-Z0-9_]+)(?:\:([^}]*))?\}")
 
