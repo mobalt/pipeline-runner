@@ -1,3 +1,4 @@
+from prunner.util import convert_args_to_dict
 from prunner import main
 import pytest
 
@@ -49,7 +50,7 @@ def test_detect_rest_of_positionals():
         "_3": "args",
         "_4": "more",
     }
-    actual = main.parse_rest_of_args(rest_of_args)
+    actual = convert_args_to_dict(rest_of_args)
     assert expected.items() < actual.items()
 
 
@@ -59,5 +60,5 @@ def test_detect_rest_of_name_args():
         "dryrun": "",
         "FOO": "bar",
     }
-    actual = main.parse_rest_of_args(rest_of_args)
+    actual = convert_args_to_dict(rest_of_args)
     assert expected.items() < actual.items()

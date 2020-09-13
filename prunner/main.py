@@ -1,27 +1,8 @@
 #!/bin/python3
 import argparse
 import os
-import re
 from prunner.exec import Executor
-
-
-arg_pattern = re.compile("--([a-zA-Z0-9_]+)(?:=(.+))?")
-
-
-def parse_rest_of_args(args):
-    positional = []
-    named = {}
-    for x in args:
-        match = arg_pattern.match(x)
-        if match:
-            named[match.group(1)] = match.group(2) or ""
-        else:
-            positional.append(x)
-    escape_spaces = [x if " " not in x else f'"{x}"' for x in positional]
-    arg_zero = " ".join(escape_spaces)
-    positional = [arg_zero] + positional
-    positional_dict = {f"_{i}": value for i, value in enumerate(positional)}
-    return {**positional_dict, **named}
+from prunner.util import convert_args_to_dict
 
 
 def parse_arguments(args=None):
@@ -54,7 +35,7 @@ def parse_arguments(args=None):
         os.path.abspath(parsed_args.config) if parsed_args.config else os.getcwd()
     )
     print(config_dir, parsed_args)
-    rest_of_args = parse_rest_of_args(parsed_args.ARGS)
+    rest_of_args = convert_args_to_dict(parsed_args.ARGS)
     return (
         config_dir,
         parsed_args.PIPELINE,
