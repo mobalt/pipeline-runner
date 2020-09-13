@@ -6,10 +6,10 @@ with open("README.md", "r") as f:
 
 setup(
     name="prunner",
-    version="0.1.2",
+    version="0.2.0",
     author="Moises Baltazar Garcia",
     author_email="me@moisesb.com",
-    description="This runs pipelines configured in YAML",
+    description="Runs pipelines configured in YAML",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/mobalt/pipeline-runner",
