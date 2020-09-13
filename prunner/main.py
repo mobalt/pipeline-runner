@@ -5,17 +5,10 @@ import importlib.util
 import os
 import re
 
-import yaml
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
-from prunner.loader.pipeline_loader import PipelineLoader
-
-
-class VariableSetNotDefined(Exception):
-    def __init__(self, filename, variable_set_name):
-        super().__init__(
-            f'The variable set "{variable_set_name}" is not defined in "{filename}".'
-        )
+from prunner.loader import PipelineLoader
+from prunner.loader import VariableLoader
 
 
 class FunctionNotDefined(Exception):
@@ -32,19 +25,6 @@ class VariableNotSet(Exception):
             f"Here is dump of the variables that exist as of this point.",
             variables,
         )
-
-
-class VariableLoader:
-    def __init__(self, filename):
-        self.filename = filename
-        with open(filename) as fd:
-            self.variable_sets = yaml.load(fd, Loader=yaml.SafeLoader)
-
-    def load_set(self, variable_set_name):
-        if variable_set_name not in self.variable_sets:
-            raise VariableSetNotDefined(self.filename, variable_set_name)
-
-        return self.variable_sets[variable_set_name]
 
 
 class FunctionLoader:

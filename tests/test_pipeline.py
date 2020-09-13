@@ -1,5 +1,6 @@
 import os
 
+import prunner.loader.variable_loader
 from prunner import main
 import pytest
 
@@ -33,7 +34,7 @@ def test_executor_load_variables_bad_argument(exec):
 
 
 def test_executor_load_variables_nonexistent_set_throws_error(exec):
-    with pytest.raises(main.VariableSetNotDefined):
+    with pytest.raises(prunner.loader.variable_loader.VariableSetNotDefined):
         exec.load_variables("not exist")
 
 
