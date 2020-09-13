@@ -1,7 +1,7 @@
 import pytest
 from jinja2 import TemplateNotFound
 
-from prunner.loader import PipelineLoader, PipelineNotDefined
+from prunner.loader import *
 from prunner import main
 
 CONFIG_DIR = "example"
@@ -21,7 +21,7 @@ def test_pipeline_loader_load_pipe_that_doesnt_exist():
 def test_with_default_value_not_added_to_result():
     function_name = "example_function"
     variables = {"REQUIRED": True}
-    f = main.FunctionLoader(f"{CONFIG_DIR}/functions.py")
+    f = FunctionLoader(f"{CONFIG_DIR}/functions.py")
     actual = f.execute(function_name, variables)
     expected = {"SET_THIS_VARIABLE": "1", "DEFAULTED": "default"}
     assert actual == expected
@@ -30,7 +30,7 @@ def test_with_default_value_not_added_to_result():
 def test_function_with_required_and_defaulted_value():
     function_name = "example_function"
     variables = {"REQUIRED": True, "WITH_DEFAULT_VALUE": "new value"}
-    f = main.FunctionLoader(f"{CONFIG_DIR}/functions.py")
+    f = FunctionLoader(f"{CONFIG_DIR}/functions.py")
     actual = f.execute(function_name, variables)
     expected = {
         "SET_THIS_VARIABLE": "1",
@@ -42,16 +42,16 @@ def test_function_with_required_and_defaulted_value():
 def test_missing_function():
     function_name = "nonexistent_function"
     variables = {"REQUIRED": True}
-    f = main.FunctionLoader(f"{CONFIG_DIR}/functions.py")
-    with pytest.raises(main.FunctionNotDefined):
+    f = FunctionLoader(f"{CONFIG_DIR}/functions.py")
+    with pytest.raises(FunctionNotDefined):
         f.execute(function_name, variables)
 
 
 def test_missing_variables():
     function_name = "example_function"
     variables = {}
-    f = main.FunctionLoader(f"{CONFIG_DIR}/functions.py")
-    with pytest.raises(main.VariableNotSet):
+    f = FunctionLoader(f"{CONFIG_DIR}/functions.py")
+    with pytest.raises(ParamsNotDefined):
         f.execute(function_name, variables)
 
 
