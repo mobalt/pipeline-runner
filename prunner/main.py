@@ -4,11 +4,12 @@ import copy
 import os
 import re
 
-from jinja2 import Environment, FileSystemLoader, StrictUndefined
-
-from prunner.loader import PipelineLoader
-from prunner.loader import VariableLoader
-from prunner.loader.function_loader import FunctionLoader
+from prunner.loader import (
+    PipelineLoader,
+    VariableLoader,
+    FunctionLoader,
+    TemplateLoader,
+)
 
 
 class VariableNotSet(Exception):
@@ -18,17 +19,6 @@ class VariableNotSet(Exception):
             f"Here is dump of the variables that exist as of this point.",
             variables,
         )
-
-
-class TemplateLoader:
-    def __init__(self, templates_folder):
-        self.env = Environment(
-            loader=FileSystemLoader(templates_folder), undefined=StrictUndefined
-        )
-
-    def render(self, template_name, variables):
-        t = self.env.get_template(template_name)
-        return t.render(**variables)
 
 
 expansion_regex = re.compile(r"\$([a-zA-Z0-9_]+)|\$\{([a-zA-Z0-9_]+)(?:\:([^}]*))?\}")

@@ -5,3 +5,4 @@ from prunner.loader.function_loader import (
     FunctionNotDefined,
     ParamsNotDefined,
 )
+from prunner.loader.template_loader import TemplateLoader
