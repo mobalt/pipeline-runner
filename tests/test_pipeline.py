@@ -2,6 +2,7 @@ import os
 
 import prunner.loader.variable_loader
 from prunner import main
+from prunner.main import ExecutionEnvironment
 import pytest
 
 CONFIG_DIR = "example"
@@ -9,7 +10,7 @@ CONFIG_DIR = "example"
 
 @pytest.fixture
 def exec():
-    executor = main.Executor.from_config_dir(CONFIG_DIR)
+    executor = ExecutionEnvironment.from_config_dir(CONFIG_DIR)
     executor.variables["FOO"] = "bar"
     return executor
 
