@@ -10,43 +10,7 @@ from prunner.loader import (
     FunctionLoader,
     TemplateLoader,
 )
-
-
-class VariableNotSet(Exception):
-    def __init__(self, not_set, variables):
-        super().__init__(
-            f'The following variable(s) have not been set: {", ".join(not_set)}',
-            f"Here is dump of the variables that exist as of this point.",
-            variables,
-        )
-
-
-expansion_regex = re.compile(r"\$([a-zA-Z0-9_]+)|\$\{([a-zA-Z0-9_]+)(?:\:([^}]*))?\}")
-
-
-def shellexpansion(string, variables):
-    if string[0] == "~":
-        home = os.path.expanduser("~")
-        string = home + string[1:]
-
-    def replacements(matchobj):
-        variable_name = (
-            matchobj.group(1) if matchobj.group(2) is None else matchobj.group(2)
-        )
-        default_value = matchobj.group(3)
-        if variable_name in variables:
-            return variables[variable_name]
-        elif default_value:
-            return default_value
-        else:
-            raise VariableNotSet((variable_name,), variables)
-
-    string = expansion_regex.sub(replacements, string)
-    return string
-
-
-def shellexpansion_dict(obj, variables):
-    return {k: shellexpansion(v, variables) for k, v in obj.items()}
+from prunner.util.expand import shellexpansion_dict
 
 
 class Executor:
