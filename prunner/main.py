@@ -1,43 +1,8 @@
 #!/bin/python3
 import argparse
-import copy
 import os
 import re
-from prunner.exec import ExecutionEnvironment
-from prunner.loader import PipelineLoader
-
-
-def list_of_methods(class_):
-    method_list = [
-        func
-        for func in dir(class_)
-        if callable(getattr(class_, func)) and not func.startswith("__")
-    ]
-    return method_list
-
-
-def execute_pipeline(exec: ExecutionEnvironment):
-    yaml_file = f"{exec.config_dir}/pipelines.yaml"
-    pipelines = PipelineLoader(yaml_file)
-    pipeline_to_execute = exec.variables["PIPELINE_NAME"]
-
-    methods_available = list_of_methods(ExecutionEnvironment)
-
-    pipeline = pipelines.tasks(pipeline_to_execute)
-    for i, task in enumerate(pipeline):
-        task: dict = copy.deepcopy(task)
-        task_name, task_value = task.popitem()
-
-        if task_name not in methods_available:
-            raise Exception("That task is not available: ", task_name)
-
-        if type(task_value) == str:
-            print(f"Task {i}: {task_name} = {task_value}")
-        else:
-            print(f"Task {i}: {task_name}\n{task_value}")
-
-        func = getattr(exec, task_name)
-        func(task_value)
+from prunner.exec import Executor
 
 
 arg_pattern = re.compile("--([a-zA-Z0-9_]+)(?:=(.+))?")
@@ -89,18 +54,21 @@ def parse_arguments(args=None):
         os.path.abspath(parsed_args.config) if parsed_args.config else os.getcwd()
     )
     print(config_dir, parsed_args)
-    executor = ExecutionEnvironment.from_config_dir(config_dir)
-    executor.verbose = parsed_args.verbose
-    executor.dry_run = parsed_args.dryrun
-    executor.variables["PIPELINE_NAME"] = parsed_args.PIPELINE
-    executor.variables.update(parse_rest_of_args(parsed_args.ARGS))
-
-    return executor
+    rest_of_args = parse_rest_of_args(parsed_args.ARGS)
+    return (
+        config_dir,
+        parsed_args.PIPELINE,
+        rest_of_args,
+        parsed_args.dryrun,
+        parsed_args.verbose,
+    )
 
 
 def main():
-    exec = parse_arguments()
-    execute_pipeline(exec)
+    config_dir, pipeline, rest_of_args, dryrun, verbose = parse_arguments()
+    r = Executor(config_dir, rest_of_args, dryrun, verbose)
+    r.execute_pipeline(pipeline)
+    return r
 
 
 if __name__ == "__main__":

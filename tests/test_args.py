@@ -3,7 +3,7 @@ import pytest
 
 
 @pytest.fixture
-def exec():
+def args():
     input = [
         "-c",
         "example",
@@ -16,28 +16,31 @@ def exec():
         "--FOO=bar",
         "more",
     ]
-    exec = main.parse_arguments(input)
-    return exec
+    return main.parse_arguments(input)
 
 
-def test_set_config_directory(exec):
-    assert exec.config_dir.endswith("example")
-    assert exec.config_dir.startswith("/home")
+def test_set_config_directory(args):
+    config_dir, pipeline, rest_of_args, dryrun, verbose = args
+    assert config_dir.endswith("example")
+    assert config_dir.startswith("/home")
 
 
-def test_detects_flags_before_pipeline(exec):
-    assert exec.verbose
+def test_detects_flags_before_pipeline(args):
+    config_dir, pipeline, rest_of_args, dryrun, verbose = args
+    assert verbose == True
 
 
-def test_ignores_flags_after_pipeline(exec):
-    assert exec.dry_run == False
+def test_ignores_flags_after_pipeline(args):
+    config_dir, pipeline, rest_of_args, dryrun, verbose = args
+    assert dryrun == False
 
 
-def test_detects_pipeline(exec):
-    assert exec.variables["PIPELINE_NAME"] == "pipeline"
+def test_detects_pipeline(args):
+    config_dir, pipeline, rest_of_args, dryrun, verbose = args
+    assert pipeline == "pipeline"
 
 
-def test_detect_rest_of_positionals(exec):
+def test_detect_rest_of_positionals():
     rest_of_args = ["--dryrun", "rest", "of", "args", "--FOO=bar", "more"]
     expected = {
         "_0": "rest of args more",
@@ -50,7 +53,7 @@ def test_detect_rest_of_positionals(exec):
     assert expected.items() < actual.items()
 
 
-def test_detect_rest_of_name_args(exec):
+def test_detect_rest_of_name_args():
     rest_of_args = ["--dryrun", "rest", "of", "args", "--FOO=bar", "more"]
     expected = {
         "dryrun": "",
