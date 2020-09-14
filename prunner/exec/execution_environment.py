@@ -44,8 +44,7 @@ class ExecutionEnvironment:
 
         raw_variables = self.var_loader.load_set(set_name)
         expanded_variables = shellexpansion_dict(raw_variables, self.variables)
-        updated_variables = {**self.variables, **expanded_variables}
-        self.variables = updated_variables
+        return expanded_variables
 
     def generate_file(self, params, dryrun=False):
         if type(params) != dict:
@@ -65,13 +64,10 @@ class ExecutionEnvironment:
             with open(filepath, "w") as fd:
                 fd.write(rendered_text)
 
-        updated_variables = {
-            **self.variables,
-            params.get("variable", "OUTPUT_FILE"): filepath,
+        varname = params.get("variable", "OUTPUT_FILE")
+        return {
+            varname: filepath,
         }
-        self.variables = updated_variables
-
-        return rendered_text
 
     def function(self, function_name):
         if type(function_name) != str:
@@ -79,10 +75,8 @@ class ExecutionEnvironment:
                 "Expecting a string with the set of variables to load. Instead received: ",
                 function_name,
             )
-        result = self.functions.execute(function_name, self.variables)
-        self.variables.update(result)
-
-        return result
+        update_variables = self.functions.execute(function_name, self.variables)
+        return update_variables
 
     def set_variables(self, new_variables):
         if type(new_variables) != dict:
@@ -91,5 +85,4 @@ class ExecutionEnvironment:
                 new_variables,
             )
         expanded = shellexpansion_dict(new_variables, self.variables)
-        self.variables.update(expanded)
         return expanded

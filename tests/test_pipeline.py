@@ -15,17 +15,15 @@ def env():
 
 
 def test_executor_load_variables(env):
-    before = dict(env.variables)
-    env.load_variables("functional")
-    after = dict(env.variables)
-    assert len(before) < len(after)
+    results = env.load_variables("functional")
+    assert 0 < len(results)
 
 
 def test_executor_load_variables_has_expansion(env):
-    env.load_variables("functional")
-    raw = "$HOME/XNAT_BUILD_DIR/$USER"
-    actual = env.variables["XNAT_PBS_JOBS_BUILD_DIR"]
-    assert raw != actual
+    raw_input = "$HOME/XNAT_BUILD_DIR/$USER"
+    loaded_variables = env.load_variables("functional")
+    actual = loaded_variables["XNAT_PBS_JOBS_BUILD_DIR"]
+    assert raw_input != actual
 
 
 def test_executor_load_variables_bad_argument(env):
@@ -38,22 +36,6 @@ def test_executor_load_variables_nonexistent_set_throws_error(env):
         env.load_variables("not exist")
 
 
-def test_generate_file_filepath_default_variable_set(env):
-    before = dict(env.variables)
-    env.generate_file(
-        {
-            "template": "pbs_head.jinja2",
-            "filepath": "~/delete_me.sh",
-            "variable": "OUT",
-        },
-        dryrun=True,
-    )
-    after = dict(env.variables)
-
-    assert "OUT" not in before
-    assert "OUT" in after
-
-
 def test_generate_file_receives_str_param(env):
     with pytest.raises(TypeError):
         env.generate_file(
@@ -63,32 +45,20 @@ def test_generate_file_receives_str_param(env):
 
 
 def test_shellexpanded_generated_filepath(env):
-    env.generate_file(
+    updates = env.generate_file(
         {
             "template": "pbs_head.jinja2",
             "filepath": "~/delete_me.$FOO.sh",
         },
         dryrun=True,
     )
-    filepath = env.variables["OUTPUT_FILE"]
+    filepath = updates["OUTPUT_FILE"]
     assert filepath.endswith("delete_me.bar.sh")
     assert filepath.startswith("/home/")
 
 
-def test_generated_output_content(env):
-    result = env.generate_file(
-        {
-            "template": "pbs_head.jinja2",
-            "filepath": "~/delete_me.$USER.sh",
-        },
-        dryrun=True,
-    )
-    expected = "#PBS -S /bin/bash\n#PBS -l nodes=1:ppn=1,walltime=4:00:00,mem=4gb\n"
-    assert expected in result
-
-
 def test_saving_generated_file(env):
-    expected_content = env.generate_file(
+    result = env.generate_file(
         {
             "template": "pbs_head.jinja2",
             "filepath": "delete_me.sh",
@@ -99,14 +69,13 @@ def test_saving_generated_file(env):
         "#PBS -S /bin/bash\n#PBS -l nodes=1:ppn=1,walltime=4:00:00,mem=4gb\n"
     )
 
-    filepath = env.variables["script_path"]
+    filepath = result["script_path"]
     assert os.path.exists(filepath)
 
     with open(filepath, "r") as fd:
         actual_content = fd.read()
 
     assert expected_excerpt in actual_content
-    assert expected_content == actual_content
 
     # clean up generated file
     os.remove(filepath)
@@ -123,10 +92,7 @@ def test_call_function(env):
         "SESSION": "x_y",
     }
     actual = env.function("split_subject")
-    all_vars = env.variables
     assert expected == actual
-    # check that expected items are a subset of all_vars
-    assert expected.items() <= all_vars.items()
 
 
 def test_function_receives_non_str_param(env):
@@ -141,10 +107,9 @@ def test_calling_function_throws_error(env):
 
 
 def test_set_variables(env):
-    before = dict(env.variables)
-    env.set_variables({"USER": "New User Account"})
-    after = dict(env.variables)
-    assert before["USER"] != after["USER"]
+    value = "New User Account"
+    result = env.set_variables({"USER": value})
+    assert result["USER"] == value
 
 
 def test_set_variables_receives_param_of_wrong_type(env):

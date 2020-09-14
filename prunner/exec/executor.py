@@ -36,10 +36,17 @@ class Executor:
             if task_name not in methods_available:
                 raise Exception("That task is not available: ", task_name)
 
+            print("-" * 80)
             if type(task_value) == str:
                 print(f"Task {i}: {task_name} = {task_value}")
             else:
                 print(f"Task {i}: {task_name}\n{task_value}")
 
             func = getattr(self.env, task_name)
-            func(task_value)
+            updates = func(task_value)
+            if updates is None or type(updates) != dict:
+                updates = {}
+            self.env.variables = {
+                **self.env.variables,
+                **updates,
+            }
