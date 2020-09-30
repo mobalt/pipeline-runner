@@ -60,9 +60,13 @@ class ExecutionEnvironment:
         filepath = params["filepath"]
         filepath = os.path.abspath(filepath)
 
-        if not dryrun:
-            with open(filepath, "w") as fd:
-                fd.write(rendered_text)
+        if dryrun:
+            os.makedirs("generated/", exist_ok=True)
+            filepath = filepath.replace("/", "\\")
+            filepath = os.path.abspath("generated/" + filepath)
+
+        with open(filepath, "w") as fd:
+            fd.write(rendered_text)
 
         varname = params.get("variable", "OUTPUT_FILE")
         return {
