@@ -1,40 +1,49 @@
 import copy
 
 from prunner.loader import PipelineLoader
-from .execution_environment import ExecutionEnvironment
 
-
-def list_of_methods(class_):
-    method_list = [
-        func
-        for func in dir(class_)
-        if callable(getattr(class_, func)) and not func.startswith("__")
-    ]
-    return method_list
+from .tasks import (
+    TaskStrategy,
+    LoadVariablesTask,
+    SetVariablesTask,
+    GenerateFileTask,
+    FunctionTask,
+)
 
 
 class Executor:
     def __init__(self, config_dir, variables, dryrun=False, verbose=False):
-        env = ExecutionEnvironment.from_config_dir(config_dir)
-        env.verbose = verbose
-        env.dry_run = dryrun
-        env.variables.update(variables)
-        self.env = env
-        self.config_dir = config_dir
+        self.variables = {
+            "PRUNNER_CONFIG_DIR": config_dir,
+            "DRYRUN": dryrun,
+            "VERBOSE": verbose,
+            **variables,
+        }
+        self.tasks = {}
+        self.add_standard_tasks()
+
+    def add_task(self, task: TaskStrategy):
+        self.tasks[task.task_name] = task
+
+    def add_standard_tasks(self):
+        self.add_task(LoadVariablesTask())
+        self.add_task(SetVariablesTask())
+        self.add_task(FunctionTask())
+        self.add_task(GenerateFileTask())
 
     def execute_pipeline(self, pipeline_name):
-        self.env.variables["PIPELINE_NAME"] = pipeline_name
+        self.variables["PIPELINE_NAME"] = pipeline_name
 
-        yaml_file = f"{self.config_dir}/pipelines.yaml"
+        config_dir = self.variables["PRUNNER_CONFIG_DIR"]
+        yaml_file = f"{config_dir}/pipelines.yaml"
         pipelines = PipelineLoader(yaml_file)
-        methods_available = list_of_methods(ExecutionEnvironment)
-
         pipeline = pipelines.tasks(pipeline_name)
+
         for i, task in enumerate(pipeline):
             task: dict = copy.deepcopy(task)
             task_name, task_value = task.popitem()
 
-            if task_name not in methods_available:
+            if task_name not in self.tasks:
                 raise Exception("That task is not available: ", task_name)
 
             print("-" * 80)
@@ -43,20 +52,17 @@ class Executor:
             else:
                 print(f"Task {i}: {task_name}\n{task_value}")
 
-            func = getattr(self.env, task_name)
-            updates = func(task_value)
+            updates = self.tasks[task_name].execute(task_value, self.variables)
             if updates is None or type(updates) != dict:
                 updates = {}
-            if self.env.verbose:
+            if self.variables["VERBOSE"]:
                 new_variables = {
-                    k: v for k, v in updates.items() if k not in self.env.variables
+                    k: v for k, v in updates.items() if k not in self.variables
                 }
-                mutations = {
-                    k: v for k, v in updates.items() if k in self.env.variables
-                }
+                mutations = {k: v for k, v in updates.items() if k in self.variables}
                 print("Mutations = ", mutations)
                 print("New Values = ", new_variables)
-            self.env.variables = {
-                **self.env.variables,
+            self.variables = {
+                **self.variables,
                 **updates,
             }
