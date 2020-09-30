@@ -15,24 +15,32 @@ class ExecutionEnvironment:
         functions: FunctionLoader,
         templates: TemplateLoader,
         var_loader: VariableLoader,
+        dryrun: bool,
+        verbose: bool,
+        config_dir: str,
     ):
+        variables["PRUNNER_CONFIG_DIR"] = config_dir
+        variables["DRYRUN"] = dryrun
+        variables["VERBOSE"] = verbose
         self.variables = variables
         self.functions = functions
         self.templates = templates
         self.var_loader = var_loader
-        self.config_dir = ""
-        self.dry_run = False
-        self.verbose = False
+        self.config_dir = config_dir
+        self.dry_run = dryrun
+        self.verbose = verbose
 
     @staticmethod
-    def from_config_dir(configuration_dir):
+    def from_config_dir(configuration_dir, dryrun=False, verbose=False):
         executor = ExecutionEnvironment(
             dict(os.environ),
             FunctionLoader(f"{configuration_dir}/functions.py"),
             TemplateLoader(f"{configuration_dir}/templates"),
             VariableLoader(f"{configuration_dir}/variables.yaml"),
+            dryrun,
+            verbose,
+            configuration_dir,
         )
-        executor.config_dir = configuration_dir
         return executor
 
     def load_variables(self, set_name):
