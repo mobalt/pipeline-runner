@@ -49,8 +49,8 @@ class Executor:
             if updates is None or type(updates) != dict:
                 updates = {}
             if self.env.verbose:
-                new_variables = {k:v for k, v in updates if k not in self.env.variables}
-                mutations = {k:v for k, v in updates if k in self.env.variables}
+                new_variables = {k:v for k, v in updates.items() if k not in self.env.variables}
+                mutations = {k:v for k, v in updates.items() if k in self.env.variables}
                 print("Mutations = ", mutations)
                 print("New Values = ", new_variables)
             self.env.variables = {
