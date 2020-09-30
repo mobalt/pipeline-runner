@@ -53,13 +53,8 @@ class ExecutionEnvironment:
         return task.execute(params, self.variables)
 
     def function(self, function_name):
-        if type(function_name) != str:
-            raise TypeError(
-                "Expecting a string with the set of variables to load. Instead received: ",
-                function_name,
-            )
-        update_variables = self.functions.execute(function_name, self.variables)
-        return update_variables
+        task = FunctionTask()
+        return task.execute(function_name, self.variables)
 
     def set_variables(self, new_variables):
         if type(new_variables) != dict:
@@ -122,3 +117,16 @@ class GenerateFileTask(TaskStrategy):
         return {
             varname: filepath,
         }
+
+
+class FunctionTask(TaskStrategy):
+    def execute(self, function_name, variables=None):
+        if type(function_name) != str:
+            raise TypeError(
+                "Expecting a string with the set of variables to load. Instead received: ",
+                function_name,
+            )
+        configuration_dir = variables["PRUNNER_CONFIG_DIR"]
+        functions = FunctionLoader(f"{configuration_dir}/functions.py")
+        update_variables = functions.execute(function_name, variables)
+        return update_variables
