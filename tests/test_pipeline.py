@@ -40,7 +40,6 @@ def test_generate_file_receives_str_param(env):
     with pytest.raises(TypeError):
         env.generate_file(
             "template = nope.jinja",
-            dryrun=True,
         )
 
 
@@ -50,7 +49,6 @@ def test_shellexpanded_generated_filepath(env):
             "template": "pbs_head.jinja2",
             "filepath": "~/delete_me.$FOO.sh",
         },
-        dryrun=True,
     )
     filepath = updates["OUTPUT_FILE"]
     assert filepath.endswith("delete_me.bar.sh")

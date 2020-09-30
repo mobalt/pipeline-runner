@@ -48,32 +48,9 @@ class ExecutionEnvironment:
         task = LoadVariablesTask()
         return task.execute(set_name, self.variables)
 
-    def generate_file(self, params, dryrun=False):
-        if type(params) != dict:
-            raise TypeError(
-                "Expecting to receive a dict as specified at https://github.com/mobalt/pipeline-runner#generate_file-dict Instead received:",
-                params,
-            )
-
-        params = shellexpansion_dict(params, self.variables)
-
-        rendered_text = self.templates.render(params["template"], self.variables)
-
-        filepath = params["filepath"]
-        filepath = os.path.abspath(filepath)
-
-        if self.dry_run or dryrun:
-            os.makedirs("generated/", exist_ok=True)
-            filepath = filepath.replace("/", "\\")
-            filepath = os.path.abspath("generated/" + filepath)
-
-        with open(filepath, "w") as fd:
-            fd.write(rendered_text)
-
-        varname = params.get("variable", "OUTPUT_FILE")
-        return {
-            varname: filepath,
-        }
+    def generate_file(self, params):
+        task = GenerateFileTask()
+        return task.execute(params, self.variables)
 
     def function(self, function_name):
         if type(function_name) != str:
@@ -96,7 +73,7 @@ class ExecutionEnvironment:
 
 class TaskStrategy(ABC):
     @abstractmethod
-    def execute(self, param, variables=None):
+    def execute(self, params, variables=None):
         pass
 
 
@@ -113,3 +90,35 @@ class LoadVariablesTask(TaskStrategy):
         raw_variables = var_loader.load_set(set_name)
         expanded_variables = shellexpansion_dict(raw_variables, variables)
         return expanded_variables
+
+
+class GenerateFileTask(TaskStrategy):
+    def execute(self, params, variables=None):
+        if type(params) != dict:
+            raise TypeError(
+                "Expecting to receive a dict as specified at https://github.com/mobalt/pipeline-runner#generate_file-dict Instead received:",
+                params,
+            )
+
+        params = shellexpansion_dict(params, variables)
+
+        configuration_dir = variables["PRUNNER_CONFIG_DIR"]
+        templates = TemplateLoader(f"{configuration_dir}/templates")
+        rendered_text = templates.render(params["template"], variables)
+
+        filepath = params["filepath"]
+        filepath = os.path.abspath(filepath)
+
+        dryrun = variables["DRYRUN"]
+        if dryrun:
+            os.makedirs("generated/", exist_ok=True)
+            filepath = filepath.replace("/", "\\")
+            filepath = os.path.abspath("generated/" + filepath)
+
+        with open(filepath, "w") as fd:
+            fd.write(rendered_text)
+
+        varname = params.get("variable", "OUTPUT_FILE")
+        return {
+            varname: filepath,
+        }
