@@ -62,12 +62,20 @@ class ExecutionEnvironment:
 
 
 class TaskStrategy(ABC):
+    @property
+    def task_name(self):
+        return ""
+
     @abstractmethod
     def execute(self, params, variables=None):
         pass
 
 
 class LoadVariablesTask(TaskStrategy):
+    @property
+    def task_name(self):
+        return "load_variables"
+
     def execute(self, set_name, variables=None):
         if type(set_name) != str:
             raise TypeError(
@@ -83,6 +91,10 @@ class LoadVariablesTask(TaskStrategy):
 
 
 class GenerateFileTask(TaskStrategy):
+    @property
+    def task_name(self):
+        return "generate_file"
+
     def execute(self, params, variables=None):
         if type(params) != dict:
             raise TypeError(
@@ -115,6 +127,10 @@ class GenerateFileTask(TaskStrategy):
 
 
 class FunctionTask(TaskStrategy):
+    @property
+    def task_name(self):
+        return "function"
+
     def execute(self, function_name, variables=None):
         if type(function_name) != str:
             raise TypeError(
@@ -128,6 +144,10 @@ class FunctionTask(TaskStrategy):
 
 
 class SetVariablesTask(TaskStrategy):
+    @property
+    def task_name(self):
+        return "set_variables"
+
     def execute(self, new_variables, variables=None):
         if type(new_variables) != dict:
             raise TypeError(
