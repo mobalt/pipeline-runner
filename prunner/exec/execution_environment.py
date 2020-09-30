@@ -57,13 +57,8 @@ class ExecutionEnvironment:
         return task.execute(function_name, self.variables)
 
     def set_variables(self, new_variables):
-        if type(new_variables) != dict:
-            raise TypeError(
-                "Expecting to receive a flat dict of new variables. Instead received:",
-                new_variables,
-            )
-        expanded = shellexpansion_dict(new_variables, self.variables)
-        return expanded
+        task = SetVariablesTask()
+        return task.execute(new_variables, self.variables)
 
 
 class TaskStrategy(ABC):
@@ -130,3 +125,14 @@ class FunctionTask(TaskStrategy):
         functions = FunctionLoader(f"{configuration_dir}/functions.py")
         update_variables = functions.execute(function_name, variables)
         return update_variables
+
+
+class SetVariablesTask(TaskStrategy):
+    def execute(self, new_variables, variables=None):
+        if type(new_variables) != dict:
+            raise TypeError(
+                "Expecting to receive a flat dict of new variables. Instead received:",
+                new_variables,
+            )
+        expanded = shellexpansion_dict(new_variables, variables)
+        return expanded
