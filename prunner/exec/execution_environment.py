@@ -1,4 +1,5 @@
 import os
+from abc import abstractmethod, ABC
 
 from prunner.loader import (
     VariableLoader,
@@ -44,15 +45,8 @@ class ExecutionEnvironment:
         return executor
 
     def load_variables(self, set_name):
-        if type(set_name) != str:
-            raise TypeError(
-                "Expecting a string with the set of variables to load. Instead received: ",
-                set_name,
-            )
-
-        raw_variables = self.var_loader.load_set(set_name)
-        expanded_variables = shellexpansion_dict(raw_variables, self.variables)
-        return expanded_variables
+        task = LoadVariablesTask()
+        return task.execute(set_name, self.variables)
 
     def generate_file(self, params, dryrun=False):
         if type(params) != dict:
@@ -98,3 +92,24 @@ class ExecutionEnvironment:
             )
         expanded = shellexpansion_dict(new_variables, self.variables)
         return expanded
+
+
+class TaskStrategy(ABC):
+    @abstractmethod
+    def execute(self, param, variables=None):
+        pass
+
+
+class LoadVariablesTask(TaskStrategy):
+    def execute(self, set_name, variables=None):
+        if type(set_name) != str:
+            raise TypeError(
+                "Expecting a string with the set of variables to load. Instead received: ",
+                set_name,
+            )
+        configuration_dir = variables["PRUNNER_CONFIG_DIR"]
+        var_loader = VariableLoader(f"{configuration_dir}/variables.yaml")
+
+        raw_variables = var_loader.load_set(set_name)
+        expanded_variables = shellexpansion_dict(raw_variables, variables)
+        return expanded_variables
