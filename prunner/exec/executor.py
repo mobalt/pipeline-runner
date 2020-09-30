@@ -25,6 +25,8 @@ class Executor:
     def execute_pipeline(self, pipeline_name):
         self.env.variables["PIPELINE_NAME"] = pipeline_name
         self.env.variables["PRUNNER_CONFIG_DIR"] = self.config_dir
+        self.env.variables["DRYRUN"] = self.env.dry_run
+        self.env.variables["VERBOSE"] = self.env.verbose
 
         yaml_file = f"{self.config_dir}/pipelines.yaml"
         pipelines = PipelineLoader(yaml_file)
