@@ -62,7 +62,7 @@ class ExecutionEnvironment:
         filepath = params["filepath"]
         filepath = os.path.abspath(filepath)
 
-        if self.dry_run:
+        if self.dry_run or dryrun:
             os.makedirs("generated/", exist_ok=True)
             filepath = filepath.replace("/", "\\")
             filepath = os.path.abspath("generated/" + filepath)

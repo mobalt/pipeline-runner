@@ -34,6 +34,7 @@ def shellexpansion(input_str, variables):
 
     return SHELL_VARIABLES_PATTERN.sub(replacements, input_str)
 
+
 def shellexpansion_misc(item, variables):
     item_type = type(item)
     if item_type == str:
@@ -48,6 +49,7 @@ def shellexpansion_misc(item, variables):
 
 def shellexpansion_list(array, variables):
     return [shellexpansion_misc(v, variables) for v in array]
+
 
 def shellexpansion_dict(obj, variables):
     return {k: shellexpansion_misc(v, variables) for k, v in obj.items()}
