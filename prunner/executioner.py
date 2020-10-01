@@ -31,20 +31,23 @@ class Executioner:
 
         for i, raw_task_dict in enumerate(pipeline):
             raw_task_dict = copy.deepcopy(raw_task_dict)
-            task_name, task_value = raw_task_dict.popitem()
+            task_name, task_params = raw_task_dict.popitem()
 
-            if task_name not in self.tasks:
-                raise Exception("That task is not available: ", task_name)
-            task = self.tasks[task_name]
+            self.print_new_task(i, task_name, task_params)
+            task = self.get_task(task_name)
 
-            self.print_new_task(i, task_name, task_value)
-
-            updates = self.run_task(task, task_value)
+            updates = self.run_task(task, task_params)
             self.handle_verbose_flag(updates)
             self.variables = {
                 **self.variables,
                 **updates,
             }
+
+    def get_task(self, task_name):
+        if task_name not in self.tasks:
+            raise Exception("That task is not available: ", task_name)
+        task = self.tasks[task_name]
+        return task
 
     def handle_verbose_flag(self, updates):
         if self.variables["VERBOSE"]:
