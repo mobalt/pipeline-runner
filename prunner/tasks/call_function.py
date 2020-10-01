@@ -1,5 +1,5 @@
 from prunner.loaders import FunctionLoader
-from prunner.util.convert import split_file_component
+from prunner.util import split_file_component
 from .base import TaskStrategy
 
 
