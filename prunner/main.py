@@ -1,7 +1,7 @@
 #!/bin/python3
 import argparse
 import os
-from prunner.exec import Executor
+from prunner.executioner import Executioner
 from prunner.util import convert_args_to_dict
 
 
@@ -47,7 +47,7 @@ def parse_arguments(args=None):
 
 def main():
     config_dir, pipeline, rest_of_args, dryrun, verbose = parse_arguments()
-    r = Executor(config_dir, rest_of_args, dryrun, verbose)
+    r = Executioner(config_dir, rest_of_args, dryrun, verbose)
     r.execute_pipeline(pipeline)
     return r
 

@@ -1,13 +1,13 @@
 import pytest
 
-from prunner.main import Executor
+from prunner.main import Executioner
 
 CONFIG_DIR = "example"
 
 
 @pytest.fixture
 def executor():
-    return Executor(CONFIG_DIR, {})
+    return Executioner(CONFIG_DIR, {})
 
 
 def test_execute_pipeline(executor):

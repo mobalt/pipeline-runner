@@ -2,7 +2,7 @@ import copy
 
 from prunner import loaders
 
-from .tasks import (
+from prunner.exec.tasks import (
     TaskStrategy,
     LoadVariablesTask,
     SetVariablesTask,
@@ -11,7 +11,7 @@ from .tasks import (
 )
 
 
-class Executor:
+class Executioner:
     def __init__(self, config_dir, variables, dryrun=False, verbose=False):
         self.variables = {
             "PRUNNER_CONFIG_DIR": config_dir,
