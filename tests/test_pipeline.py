@@ -40,8 +40,8 @@ def set_variables():
 
 
 @pytest.fixture
-def functions():
-    return FunctionTask()
+def functions(env):
+    return FunctionTask.from_settings(env)
 
 
 def test_executor_load_variables(env, load_variables):

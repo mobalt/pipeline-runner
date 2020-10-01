@@ -28,7 +28,7 @@ class Executor:
     def add_standard_tasks(self):
         self.add_task(LoadVariablesTask())
         self.add_task(SetVariablesTask())
-        self.add_task(FunctionTask())
+        self.add_task(FunctionTask.from_settings(self.variables))
         self.add_task(GenerateFileTask())
 
     def execute_pipeline(self, pipeline_name):
