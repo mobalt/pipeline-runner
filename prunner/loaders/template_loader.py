@@ -17,14 +17,3 @@ class TemplateLoader:
 
     def get_template(self, template_name):
         return self.env.get_template(template_name)
-
-    def render(self, template_name, variables):
-        t = self.env.get_template(template_name)
-        return t.render(**variables)
-
-
-# class TemplateNotFound(Exception):
-#     def __init__(self, template_dir, template_name):
-#         super().__init__(
-#             f'The template "{template_name}" doesn\'t exist in the templates folder: "{template_dir}".'
-#         )
