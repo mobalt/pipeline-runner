@@ -1,6 +1,5 @@
 import os
 
-import prunner.loader.variable_loader
 import pytest
 from prunner.exec import (
     TaskStrategy,
