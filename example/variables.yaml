@@ -140,3 +140,6 @@ structural_preprocess_CCF_MDD:
   SINGULARITY_QUNEXPARAMETER_PATH: $HOME/mdd_struc_preproc/xnat_pbs_jobs_control_CCF_MDD/SpecFiles_v3
   XNAT_PBS_JOBS_SHADOWS_ROOT: /data/intradb/build_ssd
 
+simple:
+  FOO: bar
+  complex_substitution: $HOME/users/$USER

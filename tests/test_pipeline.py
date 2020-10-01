@@ -1,67 +1,97 @@
 import os
 
 import prunner.loader.variable_loader
-from prunner.exec import ExecutionEnvironment
 import pytest
+from prunner.exec import (
+    TaskStrategy,
+    LoadVariablesTask,
+    SetVariablesTask,
+    GenerateFileTask,
+    FunctionTask,
+)
 
 CONFIG_DIR = "example"
 
 
 @pytest.fixture
 def env():
-    execution_env = ExecutionEnvironment.from_config_dir(CONFIG_DIR)
-    execution_env.variables["FOO"] = "bar"
-    return execution_env
+    return {
+        "FOO": "bar",
+        "USER": "Jack",
+        "HOME": "/home/jack/",
+        "PRUNNER_CONFIG_DIR": CONFIG_DIR,
+        "DRYRUN": True,
+    }
 
 
-def test_executor_load_variables(env):
-    results = env.load_variables("functional")
+@pytest.fixture
+def load_variables():
+    return LoadVariablesTask()
+
+
+@pytest.fixture
+def generate_file():
+    return GenerateFileTask()
+
+
+@pytest.fixture
+def set_variables():
+    return SetVariablesTask()
+
+
+@pytest.fixture
+def functions():
+    return FunctionTask()
+
+
+def test_executor_load_variables(env, load_variables):
+    results = load_variables.execute("simple", env)
     assert 0 < len(results)
 
 
-def test_executor_load_variables_has_expansion(env):
-    raw_input = "$HOME/XNAT_BUILD_DIR/$USER"
-    loaded_variables = env.load_variables("functional")
-    actual = loaded_variables["XNAT_PBS_JOBS_BUILD_DIR"]
+def test_executor_load_variables_has_expansion(env, load_variables):
+    raw_input = "$HOME/users/$USER"
+    loaded_variables = load_variables.execute("simple", env)
+    actual = loaded_variables["complex_substitution"]
     assert raw_input != actual
 
 
-def test_executor_load_variables_bad_argument(env):
+def test_executor_load_variables_bad_argument(env, load_variables):
     with pytest.raises(TypeError):
-        env.load_variables(None)
+        load_variables.execute(None, env)
 
 
-def test_executor_load_variables_nonexistent_set_throws_error(env):
+def test_executor_load_variables_nonexistent_set_throws_error(env, load_variables):
     with pytest.raises(prunner.loader.variable_loader.VariableSetNotDefined):
-        env.load_variables("not exist")
+        load_variables.execute("not exist", env)
 
 
-def test_generate_file_receives_str_param(env):
+def test_generate_file_receives_str_param(env, generate_file):
     with pytest.raises(TypeError):
-        env.generate_file(
-            "template = nope.jinja",
-        )
+        generate_file("template = nope.jinja", env)
 
 
-def test_shellexpanded_generated_filepath(env):
-    updates = env.generate_file(
+def test_shellexpanded_generated_filepath(env, generate_file):
+    updates = generate_file.execute(
         {
             "template": "pbs_head.jinja2",
             "filepath": "~/delete_me.$FOO.sh",
         },
+        env,
     )
     filepath = updates["OUTPUT_FILE"]
     assert filepath.endswith("delete_me.bar.sh")
     assert filepath.startswith("/home/")
 
 
-def test_saving_generated_file(env):
-    result = env.generate_file(
+def test_saving_generated_file(env, generate_file):
+    result = generate_file.execute(
         {
             "template": "pbs_head.jinja2",
             "filepath": "delete_me.sh",
             "variable": "script_path",
-        }
+        },
+        env,
     )
     expected_excerpt = (
         "#PBS -S /bin/bash\n#PBS -l nodes=1:ppn=1,walltime=4:00:00,mem=4gb\n"
@@ -80,8 +110,8 @@ def test_saving_generated_file(env):
     assert not os.path.exists(filepath)
 
 
-def test_call_function(env):
-    env.variables["SUBJECT"] = "proj:x:y:z"
+def test_call_function(env, functions):
+    env["SUBJECT"] = "proj:x:y:z"
     expected = {
         "PROJECT": "proj",
         "SUBJECT_ID": "x",
@@ -89,30 +119,30 @@ def test_call_function(env):
         "SUBJECT_EXTRA": "z",
         "SESSION": "x_y",
     }
-    actual = env.function("split_subject")
+    actual = functions.execute("split_subject", env)
     assert expected == actual
 
 
-def test_function_receives_non_str_param(env):
+def test_function_receives_non_str_param(env, functions):
     with pytest.raises(TypeError):
-        env.function({})
+        functions({}, env)
 
 
-def test_calling_function_throws_error(env):
-    env.variables["SUBJECT"] = "missing_stuff:x"
+def test_calling_function_throws_error(env, functions):
+    env["SUBJECT"] = "missing_stuff:x"
     with pytest.raises(ValueError):
-        actual = env.function("split_subject")
+        functions.execute("split_subject", env)
 
 
-def test_set_variables(env):
+def test_set_variables(env, set_variables):
     value = "New User Account"
-    result = env.set_variables({"USER": value})
+    result = set_variables.execute({"USER": value}, env)
     assert result["USER"] == value
 
 
-def test_set_variables_receives_param_of_wrong_type(env):
+def test_set_variables_receives_param_of_wrong_type(env, set_variables):
     with pytest.raises(TypeError):
-        env.set_variables([])
+        set_variables.execute([], env)
 
     with pytest.raises(TypeError):
-        env.set_variables(" Noop ")
+        set_variables.execute(" Fail me ", env)
