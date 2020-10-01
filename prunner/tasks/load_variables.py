@@ -1,5 +1,5 @@
 from prunner.loaders import YamlLoader
-from prunner.util import shellexpansion_dict
+from prunner.util import shellexpand
 from prunner.util import split_file_component
 from .base import TaskStrategy
 
@@ -25,5 +25,5 @@ class LoadVariablesTask(TaskStrategy):
 
         section_name, filename = split_file_component(params)
         raw_variables = self.loader.get_section(section_name, filename)
-        expanded_variables = shellexpansion_dict(raw_variables, variables)
+        expanded_variables = shellexpand(raw_variables, variables)
         return expanded_variables

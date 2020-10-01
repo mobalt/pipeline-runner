@@ -2,6 +2,18 @@ import os
 import re
 
 
+def shellexpand(item, variables):
+    item_type = type(item)
+    if item_type == str:
+        return expand_string(item, variables)
+    elif item_type == dict:
+        return expand_dict(item, variables)
+    elif item_type == list:
+        return expand_list(item, variables)
+    else:
+        return item
+
+
 class VariableNotSet(Exception):
     def __init__(self, not_set, variables):
         super().__init__(
@@ -16,7 +28,7 @@ SHELL_VARIABLES_PATTERN = re.compile(
 )
 
 
-def shellexpansion(input_str, variables):
+def expand_string(input_str, variables):
     if input_str[0] == "~":
         home = os.path.expanduser("~")
         input_str = home + input_str[1:]
@@ -35,21 +47,9 @@ def shellexpansion(input_str, variables):
     return SHELL_VARIABLES_PATTERN.sub(replacements, input_str)
 
 
-def shellexpansion_misc(item, variables):
-    item_type = type(item)
-    if item_type == str:
-        return shellexpansion(item, variables)
-    elif item_type == dict:
-        return shellexpansion_dict(item, variables)
-    elif item_type == list:
-        return shellexpansion_list(item, variables)
-    else:
-        return item
+def expand_dict(obj, variables):
+    return {k: shellexpand(v, variables) for k, v in obj.items()}
 
 
-def shellexpansion_list(array, variables):
-    return [shellexpansion_misc(v, variables) for v in array]
-
-
-def shellexpansion_dict(obj, variables):
-    return {k: shellexpansion_misc(v, variables) for k, v in obj.items()}
+def expand_list(array, variables):
+    return [shellexpand(v, variables) for v in array]

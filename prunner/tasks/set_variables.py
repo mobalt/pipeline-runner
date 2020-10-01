@@ -1,4 +1,4 @@
-from prunner.util import shellexpansion_dict
+from prunner.util import shellexpand
 from .base import TaskStrategy
 
 
@@ -13,5 +13,5 @@ class SetVariablesTask(TaskStrategy):
                 "Expecting to receive a flat dict of new variables. Instead received:",
                 new_variables,
             )
-        expanded = shellexpansion_dict(new_variables, variables)
+        expanded = shellexpand(new_variables, variables)
         return expanded

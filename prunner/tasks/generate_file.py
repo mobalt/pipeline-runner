@@ -1,7 +1,7 @@
 import os
 
 from prunner.loaders import TemplateLoader
-from prunner.util import shellexpansion_dict
+from prunner.util import shellexpand
 from .base import TaskStrategy
 
 
@@ -24,7 +24,7 @@ class GenerateFileTask(TaskStrategy):
                 params,
             )
 
-        params = shellexpansion_dict(params, variables)
+        params = shellexpand(params, variables)
 
         template = self.loader.get_template(params["template"])
         rendered_text = template.render(**variables)
