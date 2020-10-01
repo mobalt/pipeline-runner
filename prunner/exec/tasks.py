@@ -18,20 +18,26 @@ class TaskStrategy(ABC):
 
 
 class LoadVariablesTask(TaskStrategy):
+    def __init__(self, default_filename):
+        self.loader = loaders.YamlLoader(default_filename)
+
+    @classmethod
+    def from_settings(cls, settings):
+        return LoadVariablesTask(f"{settings['PRUNNER_CONFIG_DIR']}/variables.yaml")
+
     @property
     def task_name(self):
         return "load_variables"
 
-    def execute(self, set_name, variables=None):
-        if type(set_name) != str:
+    def execute(self, params, variables=None):
+        if type(params) != str:
             raise TypeError(
                 "Expecting a string with the set of variables to load. Instead received: ",
-                set_name,
+                params,
             )
-        configuration_dir = variables["PRUNNER_CONFIG_DIR"]
-        var_loader = VariableLoader(f"{configuration_dir}/variables.yaml")
 
-        raw_variables = var_loader.load_set(set_name)
+        section_name, filename = split_file_component(params)
+        raw_variables = self.loader.get_section(section_name, filename)
         expanded_variables = shellexpansion_dict(raw_variables, variables)
         return expanded_variables
 

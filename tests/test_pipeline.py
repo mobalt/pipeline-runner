@@ -9,6 +9,7 @@ from prunner.exec import (
     GenerateFileTask,
     FunctionTask,
 )
+from prunner.loaders import SectionNotDefined
 
 CONFIG_DIR = "example"
 
@@ -25,8 +26,8 @@ def env():
 
 
 @pytest.fixture
-def load_variables():
-    return LoadVariablesTask()
+def load_variables(env):
+    return LoadVariablesTask.from_settings(env)
 
 
 @pytest.fixture
@@ -62,7 +63,7 @@ def test_executor_load_variables_bad_argument(env, load_variables):
 
 
 def test_executor_load_variables_nonexistent_set_throws_error(env, load_variables):
-    with pytest.raises(prunner.loader.variable_loader.VariableSetNotDefined):
+    with pytest.raises(SectionNotDefined):
         load_variables.execute("not exist", env)
 
 
