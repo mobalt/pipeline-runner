@@ -29,7 +29,7 @@ class Executor:
         self.add_task(LoadVariablesTask())
         self.add_task(SetVariablesTask())
         self.add_task(FunctionTask.from_settings(self.variables))
-        self.add_task(GenerateFileTask())
+        self.add_task(GenerateFileTask.from_settings(self.variables))
 
     def execute_pipeline(self, pipeline_name):
         self.variables["PIPELINE_NAME"] = pipeline_name

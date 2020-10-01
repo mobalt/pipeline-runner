@@ -30,8 +30,8 @@ def load_variables():
 
 
 @pytest.fixture
-def generate_file():
-    return GenerateFileTask()
+def generate_file(env):
+    return GenerateFileTask.from_settings(env)
 
 
 @pytest.fixture

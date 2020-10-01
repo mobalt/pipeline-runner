@@ -37,6 +37,13 @@ class LoadVariablesTask(TaskStrategy):
 
 
 class GenerateFileTask(TaskStrategy):
+    def __init__(self, templates_folder):
+        self.loader = loaders.TemplateLoader(templates_folder)
+
+    @classmethod
+    def from_settings(cls, settings):
+        return GenerateFileTask(f"{settings['PRUNNER_CONFIG_DIR']}/templates")
+
     @property
     def task_name(self):
         return "generate_file"
@@ -50,9 +57,8 @@ class GenerateFileTask(TaskStrategy):
 
         params = shellexpansion_dict(params, variables)
 
-        configuration_dir = variables["PRUNNER_CONFIG_DIR"]
-        templates = TemplateLoader(f"{configuration_dir}/templates")
-        rendered_text = templates.render(params["template"], variables)
+        template = self.loader.get_template(params["template"])
+        rendered_text = template.render(**variables)
 
         filepath = params["filepath"]
         filepath = os.path.abspath(filepath)
