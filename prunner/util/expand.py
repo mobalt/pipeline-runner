@@ -29,6 +29,15 @@ SHELL_VARIABLES_PATTERN = re.compile(
 
 
 def expand_string(input_str, variables):
+    # short-circuit if is a single variable
+    result = SHELL_VARIABLES_PATTERN.match(input_str)
+    if result and result.end() == len(input_str):
+        variable_name = result[1] or result[2]
+        if variable_name in variables:
+            # notice lack of string-cohercion
+            # this allows non-str variables with their native type
+            return variables[variable_name]
+
     if input_str[0] == "~":
         home = os.path.expanduser("~")
         input_str = home + input_str[1:]
@@ -38,7 +47,9 @@ def expand_string(input_str, variables):
         default_value = matchobj.group(3)
 
         if variable_name in variables:
-            return variables[variable_name]
+            # string cohercion of value, otherwise
+            # re.sub throws error
+            return str(variables[variable_name])
         elif default_value:
             return default_value
         else:

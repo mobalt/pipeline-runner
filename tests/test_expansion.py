@@ -10,7 +10,7 @@ def home():
 
 @pytest.fixture
 def vars():
-    return {"A": "AA", "B": "BBB", "FOO": "bar"}
+    return {"A": "AA", "B": "BBB", "FOO": "bar", "bool": True, "list": [1, 2, 3]}
 
 
 def test_tilde_expansion(home, vars):
@@ -19,9 +19,24 @@ def test_tilde_expansion(home, vars):
     assert result == expected
 
 
-def test_single_variable(vars):
-    result = shellexpand("$FOO", vars)
-    expected = "bar"
+def test_single_variable_keep_native_type(vars):
+    result = shellexpand("$bool", vars)
+    expected = True
+    assert result == expected
+
+    result = shellexpand("$list", vars)
+    expected = [1, 2, 3]
+    assert result == expected
+
+
+def test_single_variable_plus_other_string_convert_to_string(vars):
+    # yes, whitespace counts as extra string
+    result = shellexpand("$bool ", vars)
+    expected = "True "
+    assert result == expected
+
+    result = shellexpand("$list ", vars)
+    expected = "[1, 2, 3] "
     assert result == expected
 
 
