@@ -13,7 +13,7 @@ pathspec==0.8.0
 pluggy==0.13.1
 py==1.9.0
 pyparsing==2.4.7
-pytest==6.0.1
+pytest==6.1.0
 pytest-cov==2.10.1
 pytest-picked==0.4.4
 pytest-sugar==0.9.4
