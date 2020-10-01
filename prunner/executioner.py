@@ -29,30 +29,41 @@ class Executioner:
         self.variables["PIPELINE_NAME"] = pipeline_name
         pipeline = self.pipeline_loader.get_section(pipeline_name)
 
-        for i, task in enumerate(pipeline):
-            task: dict = copy.deepcopy(task)
-            task_name, task_value = task.popitem()
+        for i, raw_task_dict in enumerate(pipeline):
+            raw_task_dict = copy.deepcopy(raw_task_dict)
+            task_name, task_value = raw_task_dict.popitem()
 
             if task_name not in self.tasks:
                 raise Exception("That task is not available: ", task_name)
+            task = self.tasks[task_name]
 
-            print("-" * 80)
-            if type(task_value) == str:
-                print(f"Task {i}: {task_name} = {task_value}")
-            else:
-                print(f"Task {i}: {task_name}\n{task_value}")
+            self.print_new_task(i, task_name, task_value)
 
-            updates = self.tasks[task_name].execute(task_value, self.variables)
-            if updates is None or type(updates) != dict:
-                updates = {}
-            if self.variables["VERBOSE"]:
-                new_variables = {
-                    k: v for k, v in updates.items() if k not in self.variables
-                }
-                mutations = {k: v for k, v in updates.items() if k in self.variables}
-                print("Mutations = ", mutations)
-                print("New Values = ", new_variables)
+            updates = self.run_task(task, task_value)
+            self.handle_verbose_flag(updates)
             self.variables = {
                 **self.variables,
                 **updates,
             }
+
+    def handle_verbose_flag(self, updates):
+        if self.variables["VERBOSE"]:
+            new_variables = {
+                k: v for k, v in updates.items() if k not in self.variables
+            }
+            mutations = {k: v for k, v in updates.items() if k in self.variables}
+            print("Mutations = ", mutations)
+            print("New Values = ", new_variables)
+
+    def run_task(self, task, params):
+        updates = task.execute(params, self.variables)
+        if updates is None or type(updates) != dict:
+            updates = {}
+        return updates
+
+    def print_new_task(self, i, task_name, task_value):
+        print("-" * 80)
+        if type(task_value) == str:
+            print(f"Task {i}: {task_name} = {task_value}")
+        else:
+            print(f"Task {i}: {task_name}\n{task_value}")
