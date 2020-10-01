@@ -1,38 +1,29 @@
 import copy
 
 from prunner import loaders
-
-from prunner.tasks import (
-    TaskStrategy,
-    LoadVariablesTask,
-    SetVariablesTask,
-    GenerateFileTask,
-    FunctionTask,
-)
+from prunner.tasks import STANDARD_TASKS
 
 
 class Executioner:
-    def __init__(self, config_dir, variables, dryrun=False, verbose=False):
+    def __init__(
+        self, config_dir, variables, dryrun=False, verbose=False, tasks=STANDARD_TASKS
+    ):
         self.variables = {
             "PRUNNER_CONFIG_DIR": config_dir,
             "DRYRUN": dryrun,
             "VERBOSE": verbose,
             **variables,
         }
-        self.tasks = {}
-        self.add_standard_tasks()
         yaml_file = f"{config_dir}/pipelines.yaml"
         self.pipeline_loader = loaders.YamlLoader(yaml_file)
 
-    def add_task(self, task: TaskStrategy):
-        task_instance = task.from_settings(self.variables)
-        self.tasks[task.task_name()] = task_instance
+        self.tasks = {}
+        self.add_tasks(tasks)
 
-    def add_standard_tasks(self):
-        self.add_task(LoadVariablesTask)
-        self.add_task(SetVariablesTask)
-        self.add_task(FunctionTask)
-        self.add_task(GenerateFileTask)
+    def add_tasks(self, tasks):
+        for task in tasks:
+            task_instance = task.from_settings(self.variables)
+            self.tasks[task.task_name()] = task_instance
 
     def execute_pipeline(self, pipeline_name):
         self.variables["PIPELINE_NAME"] = pipeline_name
