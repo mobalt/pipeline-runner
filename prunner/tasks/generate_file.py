@@ -13,8 +13,8 @@ class GenerateFileTask(TaskStrategy):
     def from_settings(cls, settings):
         return GenerateFileTask(f"{settings['PRUNNER_CONFIG_DIR']}/templates")
 
-    @property
-    def task_name(self):
+    @classmethod
+    def task_name(cls):
         return "generate_file"
 
     def execute(self, params, variables=None):

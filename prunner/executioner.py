@@ -25,13 +25,14 @@ class Executioner:
         self.pipeline_loader = loaders.YamlLoader(yaml_file)
 
     def add_task(self, task: TaskStrategy):
-        self.tasks[task.task_name] = task
+        task_instance = task.from_settings(self.variables)
+        self.tasks[task.task_name()] = task_instance
 
     def add_standard_tasks(self):
-        self.add_task(LoadVariablesTask.from_settings(self.variables))
-        self.add_task(SetVariablesTask())
-        self.add_task(FunctionTask.from_settings(self.variables))
-        self.add_task(GenerateFileTask.from_settings(self.variables))
+        self.add_task(LoadVariablesTask)
+        self.add_task(SetVariablesTask)
+        self.add_task(FunctionTask)
+        self.add_task(GenerateFileTask)
 
     def execute_pipeline(self, pipeline_name):
         self.variables["PIPELINE_NAME"] = pipeline_name

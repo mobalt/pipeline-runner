@@ -12,8 +12,8 @@ class LoadVariablesTask(TaskStrategy):
     def from_settings(cls, settings):
         return LoadVariablesTask(f"{settings['PRUNNER_CONFIG_DIR']}/variables.yaml")
 
-    @property
-    def task_name(self):
+    @classmethod
+    def task_name(cls):
         return "load_variables"
 
     def execute(self, params, variables=None):

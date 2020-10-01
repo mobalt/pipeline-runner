@@ -3,8 +3,8 @@ from .base import TaskStrategy
 
 
 class SetVariablesTask(TaskStrategy):
-    @property
-    def task_name(self):
+    @classmethod
+    def task_name(cls):
         return "set_variables"
 
     def execute(self, new_variables, variables=None):

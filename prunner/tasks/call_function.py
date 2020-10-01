@@ -38,8 +38,8 @@ class FunctionTask(TaskStrategy):
     def from_settings(cls, settings):
         return FunctionTask(f"{settings['PRUNNER_CONFIG_DIR']}/functions.py")
 
-    @property
-    def task_name(self):
+    @classmethod
+    def task_name(cls):
         return "function"
 
     def execute(self, params, variables=None):
