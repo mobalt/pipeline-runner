@@ -2,7 +2,7 @@ import copy
 
 from prunner import loaders
 
-from prunner.exec.tasks import (
+from prunner.tasks import (
     TaskStrategy,
     LoadVariablesTask,
     SetVariablesTask,

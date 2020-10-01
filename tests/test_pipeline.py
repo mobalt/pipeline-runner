@@ -1,7 +1,7 @@
 import os
 
 import pytest
-from prunner.exec import (
+from prunner.tasks import (
     TaskStrategy,
     LoadVariablesTask,
     SetVariablesTask,
