@@ -7,6 +7,7 @@ from prunner.tasks import (
     SetVariablesTask,
     GenerateFileTask,
     FunctionTask,
+    ParamsNotDefined,
 )
 from prunner.loaders import SectionNotDefined
 
@@ -68,7 +69,7 @@ def test_executor_load_variables_nonexistent_set_throws_error(env, load_variable
 
 def test_generate_file_receives_str_param(env, generate_file):
     with pytest.raises(TypeError):
-        generate_file("template = nope.jinja", env)
+        generate_file.execute("template = nope.jinja", env)
 
 
 def test_shellexpanded_generated_filepath(env, generate_file):
@@ -125,7 +126,12 @@ def test_call_function(env, functions):
 
 def test_function_receives_non_str_param(env, functions):
     with pytest.raises(TypeError):
-        functions({}, env)
+        functions.execute({}, env)
+
+
+def test_function_missing_param(env, functions):
+    with pytest.raises(ParamsNotDefined):
+        functions.execute("split_subject", {})
 
 
 def test_calling_function_throws_error(env, functions):

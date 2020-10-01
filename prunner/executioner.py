@@ -45,7 +45,7 @@ class Executioner:
 
     def get_task(self, task_name):
         if task_name not in self.tasks:
-            raise Exception("That task is not available: ", task_name)
+            raise ValueError("That task is not available: ", task_name)
         task = self.tasks[task_name]
         return task
 
