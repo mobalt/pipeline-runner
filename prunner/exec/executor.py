@@ -1,6 +1,6 @@
 import copy
 
-from prunner.loader import PipelineLoader
+from prunner import loaders
 
 from .tasks import (
     TaskStrategy,
@@ -21,6 +21,8 @@ class Executor:
         }
         self.tasks = {}
         self.add_standard_tasks()
+        yaml_file = f"{config_dir}/pipelines.yaml"
+        self.pipeline_loader = loaders.YamlLoader(yaml_file)
 
     def add_task(self, task: TaskStrategy):
         self.tasks[task.task_name] = task
@@ -33,11 +35,7 @@ class Executor:
 
     def execute_pipeline(self, pipeline_name):
         self.variables["PIPELINE_NAME"] = pipeline_name
-
-        config_dir = self.variables["PRUNNER_CONFIG_DIR"]
-        yaml_file = f"{config_dir}/pipelines.yaml"
-        pipelines = PipelineLoader(yaml_file)
-        pipeline = pipelines.tasks(pipeline_name)
+        pipeline = self.pipeline_loader.get_section(pipeline_name)
 
         for i, task in enumerate(pipeline):
             task: dict = copy.deepcopy(task)
