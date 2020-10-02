@@ -2,6 +2,7 @@ import copy
 
 from prunner import loaders
 from prunner.tasks import STANDARD_TASKS
+from prunner.util import shellexpand
 
 
 class Executioner:
@@ -32,6 +33,8 @@ class Executioner:
         for i, raw_task_dict in enumerate(pipeline):
             raw_task_dict = copy.deepcopy(raw_task_dict)
             task_name, task_params = raw_task_dict.popitem()
+
+            task_params = shellexpand(task_params, self.variables)
 
             self.print_new_task(i, task_name, task_params)
             task = self.get_task(task_name)

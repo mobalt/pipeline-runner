@@ -1,7 +1,6 @@
 import os
 
 from prunner.loaders import TemplateLoader
-from prunner.util import shellexpand
 from .base import TaskStrategy
 
 
@@ -23,8 +22,6 @@ class GenerateFileTask(TaskStrategy):
                 "Expecting to receive a dict as specified at https://github.com/mobalt/pipeline-runner#generate_file-dict Instead received:",
                 params,
             )
-
-        params = shellexpand(params, variables)
 
         template = self.loader.get_template(params["template"])
         rendered_text = template.render(**variables)

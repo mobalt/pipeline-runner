@@ -72,19 +72,6 @@ def test_generate_file_receives_str_param(env, generate_file):
         generate_file.execute("template = nope.jinja", env)
 
 
-def test_shellexpanded_generated_filepath(env, generate_file):
-    updates = generate_file.execute(
-        {
-            "template": "pbs_head.jinja2",
-            "filepath": "~/delete_me.$FOO.sh",
-        },
-        env,
-    )
-    filepath = updates["OUTPUT_FILE"]
-    assert filepath.endswith("delete_me.bar.sh")
-    assert filepath.startswith("/home/")
-
-
 def test_saving_generated_file(env, generate_file):
     result = generate_file.execute(
         {
