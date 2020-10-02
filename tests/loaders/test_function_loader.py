@@ -38,3 +38,10 @@ def test_get_function_returns_function_type(loader):
 def test_get_function_returns_error(loader):
     with pytest.raises(FunctionNotDefined):
         loader.get_function("does_not_exist")
+
+
+def test_run_secondary_function(loader):
+    fn = loader.get_function("call_secondary")
+    actual = fn()
+    expected = "Hello from second_function in second.py"
+    assert actual == expected

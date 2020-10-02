@@ -1,4 +1,5 @@
-import importlib
+import sys
+import importlib.machinery
 import importlib.util
 import os
 
@@ -18,13 +19,16 @@ class FunctionLoader:
         if fullpath in self.data:
             return self.data[fullpath]
 
-        # if file doesn't exist
         if not os.path.exists(fullpath):
             raise FileNotFoundError(fullpath)
 
-        base = os.path.splitext(os.path.basename(fullpath))[0]
-        spec = importlib.util.spec_from_file_location(base, fullpath)
+        module_name = os.path.splitext(os.path.basename(fullpath))[0]
+        module_parent_dir = os.path.dirname(fullpath)
+        spec = importlib.util.spec_from_file_location(
+            module_name, fullpath, submodule_search_locations=[module_parent_dir]
+        )
         module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
         spec.loader.exec_module(module)
 
         self.data[fullpath] = module
