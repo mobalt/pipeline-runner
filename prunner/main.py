@@ -47,7 +47,11 @@ def parse_arguments(args=None):
 
 def main():
     config_dir, pipeline, rest_of_args, dryrun, verbose = parse_arguments()
-    r = Executioner(config_dir, rest_of_args, dryrun, verbose)
+    vars = {
+        **os.environ,
+        **rest_of_args,
+    }
+    r = Executioner(config_dir, vars, dryrun, verbose)
     r.execute_pipeline(pipeline)
     return r
 
