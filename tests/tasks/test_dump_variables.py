@@ -53,13 +53,18 @@ def test_standardize_param_non_str_or_dict():
     with pytest.raises(TypeError):
         standardize_param(9)
 
+
 def test_generate_sh():
     actual = generate_sh({"V1": "TEST"})
     assert "export " in actual
 
+
 def test_dump_vars_task():
     task = DumpVarsTask()
-    output = task.execute({"filename":"test.sh", "variable": "DUMP_FILE"}, {"V1": "yes", "V2": False, "DRYRUN": True})
+    output = task.execute(
+        {"filename": "test.sh", "variable": "DUMP_FILE"},
+        {"V1": "yes", "V2": False, "DRYRUN": True},
+    )
     filename = output.get("DUMP_FILE")
     print("FILE", filename)
     assert os.path.exists(filename)

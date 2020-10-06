@@ -16,6 +16,7 @@ class DumpVarsTask(TaskStrategy):
 
         return {} if varname is None else {varname: filepath}
 
+
 def generate_sh(variables):
     result = ""
     for k, v in variables.items():
@@ -23,6 +24,7 @@ def generate_sh(variables):
             v = v.replace("'", "\\'")
             result += f"\nexport {k}='{v}'"
     return result
+
 
 def standardize_param(params, dryrun=False):
     if type(params) == str:
