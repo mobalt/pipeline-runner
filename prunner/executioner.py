@@ -69,7 +69,4 @@ class Executioner:
 
     def print_new_task(self, i, task_name, task_value):
         print("-" * 80)
-        if type(task_value) == str:
-            print(f"Task {i}: {task_name} = {task_value}")
-        else:
-            print(f"Task {i}: {task_name}\n{task_value}")
+        print(f"Task {i}: {task_name} = {task_value}")
