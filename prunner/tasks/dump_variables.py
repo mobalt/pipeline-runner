@@ -13,6 +13,7 @@ class DumpVarsTask(TaskStrategy):
         rendered_text = generate_sh(variables)
         with open(filepath, "w") as fd:
             fd.write(rendered_text)
+        os.chmod(filepath, 0o770)
 
         return {} if varname is None else {varname: filepath}
 

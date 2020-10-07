@@ -37,6 +37,7 @@ class GenerateFileTask(TaskStrategy):
 
         with open(filepath, "w") as fd:
             fd.write(rendered_text)
+        os.chmod(filepath, 0o770)
 
         varname = params.get("variable", "OUTPUT_FILE")
         return {
