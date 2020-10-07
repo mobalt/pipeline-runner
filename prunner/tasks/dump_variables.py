@@ -21,8 +21,8 @@ def generate_sh(variables):
     result = ""
     for k, v in variables.items():
         if type(v) is str:
-            v = v.replace("'", "\\'")
-            result += f"\nexport {k}='{v}'"
+            v = v.replace('"', '\\"')
+            result += f'\nexport {k}="{v}"'
     return result
 
 
