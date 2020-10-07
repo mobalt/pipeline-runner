@@ -59,6 +59,20 @@ def test_generate_sh():
     assert "export " in actual
 
 
+def test_generate_sh_bad_vars():
+    test_input = {
+        "ONE": "",
+        "TWO_2": "",
+        "3No": "",
+        "_No test": "",
+        "No(blah": "",
+    }
+    actual = generate_sh(test_input)
+    assert "ONE" in actual
+    assert "TWO" in actual
+    assert "No" not in actual
+
+
 def test_dump_vars_task():
     task = DumpVarsTask()
     output = task.execute(

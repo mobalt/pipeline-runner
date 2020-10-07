@@ -1,4 +1,5 @@
 import os
+import re
 
 from prunner.tasks import TaskStrategy
 
@@ -18,9 +19,14 @@ class DumpVarsTask(TaskStrategy):
         return {} if varname is None else {varname: filepath}
 
 
+VALID_VARNAME = re.compile("^[a-zA-Z_][a-zA-Z0-9_]+$")
+
+
 def generate_sh(variables):
     result = ""
     for k, v in variables.items():
+        if not VALID_VARNAME.match(k):
+            continue
         if type(v) is str:
             v = v.replace('"', '\\"')
             result += f'\nexport {k}="{v}"'
