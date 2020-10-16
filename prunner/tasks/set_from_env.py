@@ -12,11 +12,15 @@ class SetFromEnvTask(TaskStrategy):
 
     @classmethod
     def from_settings(cls, settings):
-        return SetFromEnvTask(settings['PRUNNER_ARGS'])
+        return SetFromEnvTask(settings["PRUNNER_ARGS"])
 
     @classmethod
     def task_name(cls):
         return "set_from_env"
+
+    def modify_params(self, params, variables=None):
+        # passthrough params unmodified
+        return params
 
     def execute(self, new_variables, variables=None):
         if type(new_variables) != dict:

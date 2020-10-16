@@ -34,10 +34,9 @@ class Executioner:
             raw_task_dict = copy.deepcopy(raw_task_dict)
             task_name, task_params = raw_task_dict.popitem()
 
-            task_params = shellexpand(task_params, self.variables)
-
-            self.print_new_task(i, task_name, task_params)
             task = self.get_task(task_name)
+            task_params = task.modify_params(task_params, self.variables)
+            self.print_new_task(i, task_name, task_params)
 
             updates = self.run_task(task, task_params)
             self.handle_verbose_flag(updates)
