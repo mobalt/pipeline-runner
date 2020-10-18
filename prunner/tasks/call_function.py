@@ -19,7 +19,7 @@ def generate_args_from_function_signature(fn, variables):
     param_defaults = dict(
         zip(param_names[-len(param_default_values) :], param_default_values)
     )
-    overall_vars = {**variables, **param_defaults}
+    overall_vars = {**param_defaults, **variables}
 
     # Make sure none of the arguments are missing, else throw error
     missing = [param for param in param_names if param not in overall_vars]
