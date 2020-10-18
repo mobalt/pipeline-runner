@@ -11,10 +11,6 @@ class SetFromEnvTask(TaskStrategy):
         self.overrides = overrides
 
     @classmethod
-    def from_settings(cls, settings):
-        return SetFromEnvTask(settings["PRUNNER_ARGS"])
-
-    @classmethod
     def task_name(cls):
         return "set_from_env"
 
