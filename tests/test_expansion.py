@@ -93,7 +93,7 @@ def test_shellexpand_bool(vars):
 
 
 def test_shellexpand_complex(vars):
-    input = {"list": ["$A", "${B}", "${C:99}", {"inner_dict": "$FOO"}]}
+    input = {"list": ["$A", "${B}", "${B:99}", {"inner_dict": "$FOO"}]}
     actual = shellexpand(input, vars)
-    expected = {"list": ["AA", "BBB", "99", {"inner_dict": "bar"}]}
+    expected = {"list": ["AA", "BBB", "BBB", {"inner_dict": "bar"}]}
     assert actual == expected

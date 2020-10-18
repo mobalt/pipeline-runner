@@ -4,6 +4,95 @@ import re
 
 def shellexpand(item, variables):
     item_type = type(item)
+    if item_type == dict:
+        return resolve(item, variables)
+    else:
+        return _shellexpand(item, variables)
+
+
+def resolve(unknown, known):
+    def inner_recursion(variable, dependency_chain=None):
+        # shortcircuit if already resolved
+        if variable in resolved:
+            return
+
+        if variable not in unknown:
+            # shortcircuit if already defined in "known" object
+            if variable in known:
+                return
+            else:
+                raise Exception(
+                    "Variable is not defined in either known or unknown stacks.",
+                    variable,
+                )
+
+        dependency_chain.append(variable)
+        value = unknown[variable]
+        dependencies = shellexpand_dependencies(value)
+        self_dependent = variable in dependencies
+        if self_dependent:
+            # ignore self-dependency until end
+            dependencies.remove(variable)
+        for dep in dependencies:
+            if dep in dependency_chain:
+                raise Exception(
+                    "Circular reference detected: %s -> %s" % (dependency_chain, dep)
+                )
+            else:
+                inner_recursion(dep, dependency_chain)
+
+        resolved[variable] = _shellexpand(value, {**known, **resolved})
+        dependency_chain.remove(variable)
+
+    resolved = {}
+    for k in unknown.keys():
+        inner_recursion(k, [])
+    return resolved
+
+
+def shellexpand_dependencies(item):
+    item_type = type(item)
+    if item_type == str:
+        return dep_string(item)
+    elif item_type == dict:
+        return dep_dict(item)
+    elif item_type == list:
+        return dep_list(item)
+    else:
+        return []
+
+
+def dep_string(input_str: str):
+    # short-circuit if is a single variable
+    if input_str == "~":
+        return {"HOME"}
+    elif input_str.startswith("~/"):
+        deps = {"HOME"}
+        pos = 2
+    else:
+        deps = set()
+        pos = 0
+
+    matchobj = SHELL_VARIABLES_PATTERN.search(input_str, pos)
+    while matchobj:
+        variable_name = matchobj.group(1) or matchobj.group(2)
+        # default_value = matchobj.group(3)
+        deps.add(variable_name)
+        pos = matchobj.end()
+        matchobj = SHELL_VARIABLES_PATTERN.search(input_str, pos)
+    return deps
+
+
+def dep_dict(obj):
+    return {dep for item in obj.values() for dep in shellexpand_dependencies(item)}
+
+
+def dep_list(array):
+    return {dep for item in array for dep in shellexpand_dependencies(item)}
+
+
+def _shellexpand(item, variables):
+    item_type = type(item)
     if item_type == str:
         return expand_string(item, variables)
     elif item_type == dict:
@@ -59,8 +148,8 @@ def expand_string(input_str, variables):
 
 
 def expand_dict(obj, variables):
-    return {k: shellexpand(v, variables) for k, v in obj.items()}
+    return {k: _shellexpand(v, variables) for k, v in obj.items()}
 
 
 def expand_list(array, variables):
-    return [shellexpand(v, variables) for v in array]
+    return [_shellexpand(v, variables) for v in array]
