@@ -117,7 +117,15 @@ SHELL_VARIABLES_PATTERN = re.compile(
 )
 
 
-def expand_string(input_str, variables):
+def expand_string(input_str: str, variables):
+    # replace ~ with $HOME
+    if input_str[0] == "~" and (len(input_str) == 1 or input_str[1] == "/"):
+        input_str = input_str.replace("~", "${HOME}", 1)
+
+    # if HOME not overwritten, then use system version of HOME
+    if "HOME" not in variables:
+        variables = {**variables, "HOME": os.path.expanduser("~")}
+
     # short-circuit if is a single variable
     result = SHELL_VARIABLES_PATTERN.match(input_str)
     if result and result.end() == len(input_str):
@@ -126,10 +134,6 @@ def expand_string(input_str, variables):
             # notice lack of string-cohercion
             # this allows non-str variables with their native type
             return variables[variable_name]
-
-    if input_str[0] == "~":
-        home = os.path.expanduser("~")
-        input_str = home + input_str[1:]
 
     def replacements(matchobj):
         variable_name = matchobj.group(1) or matchobj.group(2)

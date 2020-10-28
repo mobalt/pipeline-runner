@@ -13,9 +13,17 @@ def vars():
     return {"A": "AA", "B": "BBB", "FOO": "bar", "bool": True, "list": [1, 2, 3]}
 
 
-def test_tilde_expansion(home, vars):
+def test_tilde_expansion_using_system_home(home, vars):
     result = shellexpand("~/a/b/c", vars)
     expected = home + "/a/b/c"
+    assert result == expected
+
+
+def test_tilde_expansion_using_overwritten_home(vars):
+    custom_home = "/totally/different"
+    vars["HOME"] = custom_home
+    result = shellexpand("~/a/b/c", vars)
+    expected = custom_home + "/a/b/c"
     assert result == expected
 
 
