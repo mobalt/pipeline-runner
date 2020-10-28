@@ -66,6 +66,12 @@ def test_full_expansion(home, vars):
     assert result == expected
 
 
+def test_escaped_dollars(home, vars):
+    result = shellexpand("~/$$A/$${B}/$$${C:C}/$$$$$B", vars)
+    expected = home + "/$A/${B}/$C/$$BBB"
+    assert result == expected
+
+
 def test_missing_variable_throws_exception(vars):
     with pytest.raises(VariableNotSet):
         shellexpand("$NOT_DEFINED", vars)

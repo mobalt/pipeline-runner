@@ -75,8 +75,8 @@ def dep_string(input_str: str):
 
     matchobj = SHELL_VARIABLES_PATTERN.search(input_str, pos)
     while matchobj:
-        variable_name = matchobj.group(1) or matchobj.group(2)
-        # default_value = matchobj.group(3)
+        variable_name = matchobj[2] or matchobj[3]
+        # default_value = matchobj[3]
         deps.add(variable_name)
         pos = matchobj.end()
         matchobj = SHELL_VARIABLES_PATTERN.search(input_str, pos)
@@ -113,7 +113,7 @@ class VariableNotSet(Exception):
 
 
 SHELL_VARIABLES_PATTERN = re.compile(
-    r"\$([a-zA-Z0-9_]+)|\$\{([a-zA-Z0-9_]+)(?:\:([^}]*))?\}"
+    r"(\$\$)|\$([a-zA-Z0-9_]+)|\$\{([a-zA-Z0-9_]+)(?:\:([^}]*))?\}"
 )
 
 
@@ -129,15 +129,17 @@ def expand_string(input_str: str, variables):
     # short-circuit if is a single variable
     result = SHELL_VARIABLES_PATTERN.match(input_str)
     if result and result.end() == len(input_str):
-        variable_name = result[1] or result[2]
+        variable_name = result[2] or result[3]
         if variable_name in variables:
             # notice lack of string-cohercion
             # this allows non-str variables with their native type
             return variables[variable_name]
 
     def replacements(matchobj):
-        variable_name = matchobj.group(1) or matchobj.group(2)
-        default_value = matchobj.group(3)
+        if matchobj[1]:
+            return "$"
+        variable_name = matchobj[2] or matchobj[3]
+        default_value = matchobj[4]
 
         if variable_name in variables:
             # string cohercion of value, otherwise
