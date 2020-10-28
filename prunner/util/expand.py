@@ -73,13 +73,13 @@ def dep_string(input_str: str):
         deps = set()
         pos = 0
 
-    matchobj = SHELL_VARIABLES_PATTERN.search(input_str, pos)
+    matchobj = SHELL_VARIABLES_DEPENDENCY_PATTERN.search(input_str, pos)
     while matchobj:
-        variable_name = matchobj[2] or matchobj[3]
-        # default_value = matchobj[3]
-        deps.add(variable_name)
+        variable_name = matchobj[1] or matchobj[2]
+        if variable_name:
+            deps.add(variable_name)
         pos = matchobj.end()
-        matchobj = SHELL_VARIABLES_PATTERN.search(input_str, pos)
+        matchobj = SHELL_VARIABLES_DEPENDENCY_PATTERN.search(input_str, pos)
     return deps
 
 
@@ -111,6 +111,10 @@ class VariableNotSet(Exception):
             variables,
         )
 
+
+SHELL_VARIABLES_DEPENDENCY_PATTERN = re.compile(
+    r"\$\$?([a-zA-Z0-9_]+)|\$\$?\{([a-zA-Z0-9_]+)(?:\:([^}]*))?\}|\$\$"
+)
 
 SHELL_VARIABLES_PATTERN = re.compile(
     r"(\$\$)|\$([a-zA-Z0-9_]+)|\$\{([a-zA-Z0-9_]+)(?:\:([^}]*))?\}"
