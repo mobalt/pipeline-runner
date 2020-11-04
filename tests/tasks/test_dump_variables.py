@@ -11,21 +11,21 @@ def test_str():
 
 
 def test_standardize_param_str(test_str):
-    filename, var = standardize_param(test_str)
+    filename, var, create_parent_dir = standardize_param(test_str)
     assert filename.endswith(test_str)
 
 
 def test_standardize_param_abspath_used(test_str):
-    filename, var = standardize_param(test_str)
+    filename, var, create_parent_dir = standardize_param(test_str)
     assert len(filename) > len(test_str)
     assert filename.startswith("/")
 
 
 def test_standardize_param_dryrun(test_str):
-    filename, var = standardize_param(test_str, dryrun=False)
+    filename, var, create_parent_dir = standardize_param(test_str)
     assert "\\" not in filename
 
-    filename2, var2 = standardize_param(test_str, dryrun=True)
+    filename2, var2, create_parent_dir2 = standardize_param(test_str, dryrun=True)
     assert "\\" in filename2
 
 
@@ -36,7 +36,8 @@ def test_standardize_param_empty_dict():
 
 def test_standardize_param_dict(test_str):
     test_dict = {"filename": test_str, "variable": "OUTPUT_FILE"}
-    filename, var = standardize_param(test_dict)
+    filename, var, create_parent_dir = standardize_param(test_dict)
+    assert create_parent_dir == True
     assert filename.endswith(test_str)
     assert var == "OUTPUT_FILE"
 

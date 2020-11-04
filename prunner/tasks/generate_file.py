@@ -35,6 +35,11 @@ class GenerateFileTask(TaskStrategy):
             filepath = filepath.replace("/", "\\")
             filepath = os.path.abspath("generated/" + filepath)
 
+        create_parent_dir = params.get("create_parent_dir", True)
+        if create_parent_dir:
+            parent_dir = os.path.dirname(filepath)
+            os.makedirs(parent_dir, exist_ok=True)
+
         with open(filepath, "w") as fd:
             fd.write(rendered_text)
         os.chmod(filepath, 0o770)

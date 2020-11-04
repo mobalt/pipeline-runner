@@ -10,8 +10,13 @@ class DumpVarsTask(TaskStrategy):
         return "dump_variables"
 
     def execute(self, params, variables=None):
-        filepath, varname = standardize_param(params, variables.get("DRYRUN", False))
+        filepath, varname, create_parent_dir = standardize_param(params, variables.get("DRYRUN", False))
         rendered_text = generate_sh(variables)
+
+        if create_parent_dir:
+            parent_dir = os.path.dirname(filepath)
+            os.makedirs(parent_dir, exist_ok=True)
+
         with open(filepath, "w") as fd:
             fd.write(rendered_text)
         os.chmod(filepath, 0o770)
@@ -35,7 +40,7 @@ def generate_sh(variables):
 
 def standardize_param(params, dryrun=False):
     if type(params) == str:
-        filename, variable = params, None
+        filename, variable, create_parent_dir = params, None, True
     elif type(params) == dict:
         if "filename" not in params:
             raise ValueError(
@@ -43,6 +48,7 @@ def standardize_param(params, dryrun=False):
             )
         filename = params["filename"]
         variable = params.get("variable")  # optional, don't raise errors if missing
+        create_parent_dir = params.get("create_parent_dir", True)
     else:
         raise TypeError(
             "Expecting either a string or dict. Instead received: ",
@@ -59,4 +65,4 @@ def standardize_param(params, dryrun=False):
         filename = filename.replace("/", "\\")
         filename = os.path.abspath("generated/" + filename)
 
-    return filename, variable
+    return filename, variable, create_parent_dir
