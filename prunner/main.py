@@ -1,6 +1,8 @@
 #!/bin/python3
 import argparse
 import os
+
+from prunner.ImmutableDict import ImmutableDict
 from prunner.executioner import Executioner
 from prunner.util import convert_args_to_dict
 
@@ -36,19 +38,28 @@ def parse_arguments(args=None):
     )
     print(config_dir, parsed_args)
     rest_of_args = convert_args_to_dict(parsed_args.ARGS)
-    return (
-        config_dir,
-        parsed_args.PIPELINE,
-        rest_of_args,
-        parsed_args.dryrun,
-        parsed_args.verbose,
-    )
+
+    variables = {
+        "PRUNNER_CONFIG_DIR": config_dir,
+        "DRYRUN": parsed_args.dryrun,
+        "VERBOSE": parsed_args.verbose,
+        "DEFAULT_PIPELINE": parsed_args.PIPELINE,
+        **rest_of_args,
+    }
+    return variables
 
 
 def main():
-    config_dir, pipeline, rest_of_args, dryrun, verbose = parse_arguments()
-    r = Executioner(config_dir, rest_of_args, dryrun, verbose)
-    r.execute_pipeline(pipeline)
+    args = parse_arguments()
+
+    # Import all the environment variables and prefix with `ENV_`
+    variables = ImmutableDict({f"ENV_{k}": v for k, v in os.environ.items()})
+
+    # Add the CLI args to variables
+    variables.update(args)
+
+    r = Executioner(variables)
+    r.execute_pipeline(variables["DEFAULT_PIPELINE"])
     return r
 
 

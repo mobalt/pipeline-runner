@@ -8,7 +8,7 @@ CONFIG_DIR = "example"
 
 @pytest.fixture
 def executor():
-    return Executioner(CONFIG_DIR, {})
+    return Executioner({"PRUNNER_CONFIG_DIR": CONFIG_DIR})
 
 
 def test_execute_pipeline(executor):

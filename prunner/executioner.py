@@ -6,15 +6,9 @@ from prunner.util import shellexpand
 
 
 class Executioner:
-    def __init__(
-        self, config_dir, variables, dryrun=False, verbose=False, tasks=STANDARD_TASKS
-    ):
-        self.variables = {
-            "PRUNNER_CONFIG_DIR": config_dir,
-            "DRYRUN": dryrun,
-            "VERBOSE": verbose,
-            **variables,
-        }
+    def __init__(self, variables, tasks=STANDARD_TASKS):
+        self.variables = variables
+        config_dir = variables["PRUNNER_CONFIG_DIR"]
         yaml_file = f"{config_dir}/pipelines.yaml"
         self.pipeline_loader = loaders.YamlLoader(yaml_file)
 
@@ -40,10 +34,7 @@ class Executioner:
 
             updates = self.run_task(task, task_params)
             self.handle_verbose_flag(updates)
-            self.variables = {
-                **self.variables,
-                **updates,
-            }
+            self.variables.update(updates)
 
     def get_task(self, task_name):
         if task_name not in self.tasks:
