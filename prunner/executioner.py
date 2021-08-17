@@ -1,4 +1,5 @@
 import copy
+from pprint import PrettyPrinter
 
 from prunner import loaders
 from prunner.tasks import STANDARD_TASKS
@@ -14,6 +15,7 @@ class Executioner:
 
         self.tasks = {}
         self.add_tasks(tasks)
+        self.printer = PrettyPrinter()
 
     def add_tasks(self, tasks):
         for task in tasks:
@@ -47,9 +49,9 @@ class Executioner:
             new_variables = {
                 k: v for k, v in updates.items() if k not in self.variables
             }
-            mutations = {k: v for k, v in updates.items() if k in self.variables}
-            print("Mutations = ", mutations)
-            print("New Values = ", new_variables)
+            if new_variables:
+                print("Results:")
+                self.printer.pprint(new_variables)
 
     def run_task(self, task, params):
         updates = task.execute(params, self.variables)
