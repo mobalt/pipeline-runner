@@ -3,11 +3,12 @@ from pprint import PrettyPrinter
 
 from prunner import loaders
 from prunner.tasks import STANDARD_TASKS
-from prunner.util import shellexpand
 
 
 class Executioner:
     def __init__(self, variables, tasks=STANDARD_TASKS):
+        for k, v in variables.items():
+            variables[k] = typecast(v)
         self.variables = variables
         config_dir = variables["PRUNNER_CONFIG_DIR"]
         yaml_file = f"{config_dir}/pipelines.yaml"
@@ -57,8 +58,27 @@ class Executioner:
         updates = task.execute(params, self.variables)
         if updates is None or type(updates) != dict:
             updates = {}
+
+        for k, v in updates.items():
+            updates[k] = typecast(v)
+
         return updates
 
     def print_new_task(self, i, task_name, task_value):
         print("-" * 80)
         print(f"Task {i}: {task_name} = {task_value}")
+
+
+def typecast(value):
+    if type(value) != str:
+        return value
+
+    v = value.strip().lower()
+    if v == "true" or v == "yes":
+        return True
+    elif v == "false" or v == "no":
+        return False
+    elif v.isdecimal():
+        return int(v)
+    else:
+        return value
