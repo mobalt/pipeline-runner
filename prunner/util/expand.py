@@ -41,7 +41,7 @@ def resolve(unknown, known):
             else:
                 inner_recursion(dep, dependency_chain)
 
-        resolved[variable] = _shellexpand(value, {**known, **resolved})
+        resolved[variable] = _shellexpand(value, {**resolved, **known})
         dependency_chain.remove(variable)
 
     resolved = {}
