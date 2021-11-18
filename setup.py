@@ -6,7 +6,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="prunner",
-    version="0.4.4",
+    version="0.5.0",
     author="Moises Baltazar Garcia",
     author_email="me@moisesb.com",
     description="Runs pipelines configured in YAML",
