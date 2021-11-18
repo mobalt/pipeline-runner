@@ -43,7 +43,8 @@ def parse_arguments(args=None):
         "PRUNNER_CONFIG_DIR": config_dir,
         "DRYRUN": parsed_args.dryrun,
         "VERBOSE": parsed_args.verbose,
-        "DEFAULT_PIPELINE": parsed_args.PIPELINE,
+        "DEFAULT_PIPELINE": parsed_args.PIPELINE.split(':')[0],
+        "PIPELINE_ARGS": parsed_args.PIPELINE.split(':')[1] if ":" in parsed_args.PIPELINE else "",
         **rest_of_args,
     }
     return variables
@@ -59,7 +60,7 @@ def main():
     variables.update(args)
 
     r = Executioner(variables)
-    r.execute_pipeline(variables["DEFAULT_PIPELINE"])
+    r.execute_pipeline(variables["DEFAULT_PIPELINE"], variables["PIPELINE_ARGS"])
     return r
 
 

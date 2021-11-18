@@ -23,8 +23,9 @@ class Executioner:
             task_instance = task.from_settings(self.variables)
             self.tasks[task.task_name()] = task_instance
 
-    def execute_pipeline(self, pipeline_name):
+    def execute_pipeline(self, pipeline_name, pipeline_args):
         self.variables["PIPELINE_NAME"] = pipeline_name
+        self.variables["PIPELINE_ARGS"] = pipeline_args
         pipeline = self.pipeline_loader.get_section(pipeline_name)
 
         for i, raw_task_dict in enumerate(pipeline):
