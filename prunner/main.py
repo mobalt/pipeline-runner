@@ -60,7 +60,7 @@ def main():
     variables.update(args)
 
     r = Executioner(variables)
-    r.execute_pipeline(variables["DEFAULT_PIPELINE"], variables["PIPELINE_ARGS"])
+    r.execute_pipeline(variables["DEFAULT_PIPELINE"])
     return r
 
 
