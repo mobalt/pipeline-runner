@@ -1,5 +1,6 @@
 import copy
-from pprint import PrettyPrinter
+import logging
+from pprint import pformat
 
 from prunner import loaders
 from prunner.tasks import STANDARD_TASKS
@@ -16,7 +17,6 @@ class Executioner:
 
         self.tasks = {}
         self.add_tasks(tasks)
-        self.printer = PrettyPrinter()
 
     def add_tasks(self, tasks):
         for task in tasks:
@@ -51,8 +51,8 @@ class Executioner:
                 k: v for k, v in updates.items() if k not in self.variables
             }
             if new_variables:
-                print("Results:")
-                self.printer.pprint(new_variables)
+                logging.info("Results:")
+                logging.info(pformat(new_variables))
 
     def run_task(self, task, params):
         updates = task.execute(params, self.variables)
@@ -65,8 +65,8 @@ class Executioner:
         return updates
 
     def print_new_task(self, i, task_name, task_value):
-        print("-" * 80)
-        print(f"Task {i}: {task_name} = {task_value}")
+        logging.info("-" * 80)
+        logging.info(f"Task {i}: {task_name} = {task_value}")
 
 
 def typecast(value):
