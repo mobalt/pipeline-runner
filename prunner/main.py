@@ -40,8 +40,8 @@ def parse_arguments(args=None):
         os.path.abspath(parsed_args.config) if parsed_args.config else os.getcwd()
     )
     logging.info("System call: %s", " ".join(os.sys.argv))
-    logging.debug(f"Using config directory: {config_dir}")
-    logging.debug("Parsed args: %s", parsed_args)
+    logging.info(f"Using config directory: {config_dir}")
+    logging.info("Parsed args: %s", parsed_args)
 
     rest_of_args = convert_args_to_dict(parsed_args.ARGS)
 

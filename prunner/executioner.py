@@ -46,13 +46,11 @@ class Executioner:
         return task
 
     def handle_verbose_flag(self, updates):
-        if self.variables["VERBOSE"]:
-            new_variables = {
-                k: v for k, v in updates.items() if k not in self.variables
-            }
-            if new_variables:
-                logging.info("Results:")
-                logging.info(pformat(new_variables))
+        new_variables = {
+            k: v for k, v in updates.items() if k not in self.variables
+        }
+        if new_variables:
+            logging.debug("Results:\n%s", pformat(new_variables))
 
     def run_task(self, task, params):
         updates = task.execute(params, self.variables)
