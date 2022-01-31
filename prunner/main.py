@@ -57,14 +57,37 @@ def parse_arguments(args=None):
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    # create logger with 'spam_application'
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+
+    # create logs directory
     log_dir = os.path.join(os.getcwd(), "logs")
     if not os.path.exists(log_dir):
         os.makedirs(log_dir, exist_ok=True)
+
+    # create file handler which logs even debug messages
     log_file = os.path.join(log_dir, datetime.now().strftime('%y-%m-%d %H:%M:%S') + f".{os.getpid()}.log")
-    logging.getLogger().addHandler(logging.FileHandler(log_file))
+    fh = logging.FileHandler(log_file, mode='w')
+    fh.setLevel(logging.DEBUG)
+
+    # create console handler with a higher log level
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+
+    # just output the message to the console, but log the relative time to the log file
+    ch.setFormatter(logging.Formatter("%(message)s"))
+    fh.setFormatter(logging.Formatter("%(levelname)s:%(relativeCreated)d: %(message)s"))
+
+    # add the handlers to the logger
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+
 
     args = parse_arguments()
+
+    if args['VERBOSE']:
+        ch.setLevel(logging.DEBUG)
 
     # Import all the environment variables and prefix with `ENV_`
     variables = ImmutableDict({f"ENV_{k}": v for k, v in os.environ.items()})
@@ -75,10 +98,13 @@ def main():
     r = Executioner(variables)
     r.execute_pipeline(variables["DEFAULT_PIPELINE"])
     if 'PRUNNER_LOG_PATH' in variables:
-        logging.info("Copying log to: %s", variables['PRUNNER_LOG_PATH'])
-        shutil.copyfile(log_file, variables['PRUNNER_LOG_PATH'])
+        if args['DRYRUN']:
+            logging.warning("Dry-run is on. Otherwise, this would copy log to: %s", variables['PRUNNER_LOG_PATH'])
+        else:
+            logging.info("Copying log to: %s", variables['PRUNNER_LOG_PATH'])
+            shutil.copyfile(log_file, variables['PRUNNER_LOG_PATH'])
     return r
 
 
 if __name__ == "__main__":
-    main()
+    m = main()
