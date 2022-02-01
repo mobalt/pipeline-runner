@@ -4,6 +4,7 @@ import logging
 import os
 import shutil
 from datetime import datetime
+import pkg_resources
 
 from prunner.ImmutableDict import ImmutableDict
 from prunner.executioner import Executioner
@@ -11,7 +12,11 @@ from prunner.util import convert_args_to_dict
 
 
 def parse_arguments(args=None):
-    parser = argparse.ArgumentParser()
+    description = "The Pipeline runner creates a series of scripts from templates using variables stored in a YAML " \
+                  "file and executes them in a pipeline. "
+    parser = argparse.ArgumentParser(prog="prunner", description=description)
+    version = pkg_resources.require("prunner")[0].version
+    parser.add_argument('--version', action='version', version=f'%(prog)s {version}')
     parser.add_argument(
         "--config",
         "-c",
