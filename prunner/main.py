@@ -4,6 +4,8 @@ import logging
 import os
 import shutil
 from datetime import datetime
+from pprint import pformat
+
 import pkg_resources
 
 from prunner.ImmutableDict import ImmutableDict
@@ -44,9 +46,6 @@ def parse_arguments(args=None):
     config_dir = (
         os.path.abspath(parsed_args.config) if parsed_args.config else os.getcwd()
     )
-    logging.info("System call: %s", " ".join(os.sys.argv))
-    logging.info(f"Using config directory: {config_dir}")
-    logging.info("Parsed args: %s", parsed_args)
 
     rest_of_args = convert_args_to_dict(parsed_args.ARGS)
 
@@ -62,7 +61,8 @@ def parse_arguments(args=None):
 
 
 def main():
-    # create logger with 'spam_application'
+    args = parse_arguments()
+
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
 
@@ -89,10 +89,12 @@ def main():
     logger.addHandler(ch)
 
 
-    args = parse_arguments()
-
     if args['VERBOSE']:
         ch.setLevel(logging.DEBUG)
+
+    logging.info("System call: %s", " ".join(os.sys.argv))
+    logging.info(f"Using config directory: {args['PRUNNER_CONFIG_DIR']}")
+    logging.debug("Parsed args:\n%s", pformat(args))
 
     # Import all the environment variables and prefix with `ENV_`
     variables = ImmutableDict({f"ENV_{k}": v for k, v in os.environ.items()})
