@@ -6,7 +6,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="prunner",
-    version="0.6.2",
+    version="0.6.4",
     author="Moises Baltazar Garcia",
     author_email="me@moisesb.com",
     description="Runs pipelines configured in YAML",
@@ -19,7 +19,7 @@ setup(
     install_requires=["PyYAML", "Jinja2"],
     entry_points={
         "console_scripts": [
-            "prunner = prunner.main:main",
+            "prunner = prunner.main:wrapper",
         ],
     },
     keywords="prunner",

@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/env python3
 import argparse
 import logging
 import os
@@ -113,6 +113,9 @@ def main():
             shutil.copyfile(log_file, variables['PRUNNER_LOG_PATH'])
     return r
 
+def wrapper():
+    # This wrapper function consumes the return value of main() to prevent non-zero exit code
+    main()
 
 if __name__ == "__main__":
     m = main()
