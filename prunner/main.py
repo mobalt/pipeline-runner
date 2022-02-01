@@ -12,12 +12,12 @@ from prunner.ImmutableDict import ImmutableDict
 from prunner.executioner import Executioner
 from prunner.util import convert_args_to_dict
 
+version = pkg_resources.require("prunner")[0].version
 
 def parse_arguments(args=None):
     description = "The Pipeline runner creates a series of scripts from templates using variables stored in a YAML " \
                   "file and executes them in a pipeline. "
     parser = argparse.ArgumentParser(prog="prunner", description=description)
-    version = pkg_resources.require("prunner")[0].version
     parser.add_argument('--version', action='version', version=f'%(prog)s {version}')
     parser.add_argument(
         "--config",
@@ -92,8 +92,9 @@ def main():
     if args['VERBOSE']:
         ch.setLevel(logging.DEBUG)
 
+    logger.info(f"prunner version: {version}")
+    logging.info(f"CWD: {args['PRUNNER_CONFIG_DIR']}")
     logging.info("System call: %s", " ".join(os.sys.argv))
-    logging.info(f"Using config directory: {args['PRUNNER_CONFIG_DIR']}")
     logging.debug("Parsed args:\n%s", pformat(args))
 
     # Import all the environment variables and prefix with `ENV_`
